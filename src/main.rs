@@ -7,18 +7,19 @@ fn main() {
 
     match cli.command {
         Some(Commands::Rename { pattern, files }) => {
+
+            if let Some(pattern) = pattern {
+                println!("Pattern to use: {}", pattern);
+            } else {
+                println!("No pattern provided.");
+            }
+
             if let Some(files) = files {
                 for file in files {
                     println!("File to rename: {:?}", file);
                 }
             } else {
                 println!("No files provided.");
-            }
-
-            if let Some(pattern) = pattern {
-                println!("Pattern to use: {}", pattern);
-            } else {
-                println!("No pattern provided.");
             }
         }
         Some(Commands::Test { list }) => {
