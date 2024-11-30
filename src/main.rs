@@ -46,8 +46,12 @@ fn main() {
 #[command(version, about, long_about = None)]
 struct Cli {
     /// Turn dry-run on
-    #[arg(short, long, value_name = "DRY_RUN", global = true, default_value_t = false)]
+    #[arg(short, long, value_name = "DRY_RUN", global = true, default_value_t = false, display_order = 1001)]
     dry_run: bool,
+
+    /// Turn verbose mode on
+    #[arg(short, long, value_name = "VERBOSE", global = true, default_value_t = false, display_order = 1000)]
+    verbose: bool,
 
     #[command(subcommand)]
     command: Option<Commands>,
@@ -57,13 +61,13 @@ struct Cli {
 enum Commands {
     /// rename files
     Rename {
-        /// The pattern to use for renaming
-        #[arg(short, long, value_name = "PATTERN")]
-        pattern: Option<String>,
-
         /// Enable recursive mode
-        #[arg(short, long, value_name = "RECURSIVE")]
+        #[arg(short, long, value_name = "RECURSIVE", display_order = 0)]
         recursive: bool,
+        
+        /// The pattern to use for renaming
+        #[arg(short, long, value_name = "PATTERN", display_order = 1)]
+        pattern: Option<String>,
 
         /// The files to rename
         paths: Option<Vec<PathBuf>>,
