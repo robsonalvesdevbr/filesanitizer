@@ -6,7 +6,7 @@ fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Some(Commands::Rename { pattern, files }) => {
+        Some(Commands::Rename { pattern, recursive, paths }) => {
 
             if let Some(pattern) = pattern {
                 println!("Pattern to use: {}", pattern);
@@ -14,12 +14,23 @@ fn main() {
                 println!("No pattern provided.");
             }
 
-            if let Some(files) = files {
-                for file in files {
+            if recursive {
+                println!("Recursive mode enabled.");
+            } else {
+                println!("Recursive mode disabled.");
+            }
+
+            if let Some(paths) = paths {
+                for file in paths {
                     println!("File to rename: {:?}", file);
                 }
             } else {
                 println!("No files provided.");
+            }
+
+            // dry-run is a global option
+            if cli.dry_run {
+                println!("Dry-run mode enabled.");
             }
         }
         Some(Commands::Test { list }) => {
@@ -35,7 +46,7 @@ fn main() {
 #[command(version, about, long_about = None)]
 struct Cli {
     /// Turn dry-run on
-    #[arg(short, long)]
+    #[arg(short, long, value_name = "DRY_RUN", global = true, default_value_t = false)]
     dry_run: bool,
 
     #[command(subcommand)]
@@ -46,12 +57,16 @@ struct Cli {
 enum Commands {
     /// rename files
     Rename {
-        /// The pattern to rename files with
+        /// The pattern to use for renaming
         #[arg(short, long, value_name = "PATTERN")]
         pattern: Option<String>,
 
+        /// Enable recursive mode
+        #[arg(short, long, value_name = "RECURSIVE")]
+        recursive: bool,
+
         /// The files to rename
-        files: Option<Vec<PathBuf>>,
+        paths: Option<Vec<PathBuf>>,
     },
     /// does testing things
     Test {
