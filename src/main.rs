@@ -2,19 +2,40 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+fn main() {
+    let cli = Cli::parse();
+
+    match cli.command {
+        Some(Commands::Rename { pattern, files }) => {
+            if let Some(files) = files {
+                for file in files {
+                    println!("File to rename: {:?}", file);
+                }
+            } else {
+                println!("No files provided.");
+            }
+
+            if let Some(pattern) = pattern {
+                println!("Pattern to use: {}", pattern);
+            } else {
+                println!("No pattern provided.");
+            }
+        }
+        Some(Commands::Test { list }) => {
+            if list {
+                println!("Listing test values...");
+            }
+        },
+        None => {}
+    }
+}
+
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
-    /// Optional name to operate on
-    name: Option<String>,
-
-    /// Sets a custom config file
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
-
-    /// Turn debugging information on
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
+    /// Turn dry-run on
+    #[arg(short, long)]
+    dry_run: bool,
 
     #[command(subcommand)]
     command: Option<Commands>,
@@ -22,6 +43,15 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// rename files
+    Rename {
+        /// The pattern to rename files with
+        #[arg(short, long, value_name = "PATTERN")]
+        pattern: Option<String>,
+
+        /// The files to rename
+        files: Option<Vec<PathBuf>>,
+    },
     /// does testing things
     Test {
         /// lists test values
@@ -30,39 +60,72 @@ enum Commands {
     },
 }
 
-fn main() {
-    let cli = Cli::parse();
 
-    // You can check the value provided by positional arguments, or option arguments
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {name}");
-    }
+// use std::path::PathBuf;
 
-    if let Some(config_path) = cli.config.as_deref() {
-        println!("Value for config: {}", config_path.display());
-    }
+// use clap::{Parser, Subcommand};
 
-    // You can see how many times a particular flag or argument occurred
-    // Note, only flags can have multiple occurrences
-    match cli.debug {
-        0 => println!("Debug mode is off"),
-        1 => println!("Debug mode is kind of on"),
-        2 => println!("Debug mode is on"),
-        _ => println!("Don't be crazy"),
-    }
+// #[derive(Parser)]
+// #[command(version, about, long_about = None)]
+// struct Cli {
+//     /// Optional name to operate on
+//     name: Option<String>,
 
-    // You can check for the existence of subcommands, and if found use their
-    // matches just as you would the top level cmd
-    match &cli.command {
-        Some(Commands::Test { list }) => {
-            if *list {
-                println!("Printing testing lists...");
-            } else {
-                println!("Not printing testing lists...");
-            }
-        }
-        None => {}
-    }
+//     /// Sets a custom config file
+//     #[arg(short, long, value_name = "FILE")]
+//     config: Option<PathBuf>,
 
-    // Continued program logic goes here...
-}
+//     /// Turn debugging information on
+//     #[arg(short, long, action = clap::ArgAction::Count)]
+//     debug: u8,
+
+//     #[command(subcommand)]
+//     command: Option<Commands>,
+// }
+
+// #[derive(Subcommand)]
+// enum Commands {
+//     /// does testing things
+//     Test {
+//         /// lists test values
+//         #[arg(short, long)]
+//         list: bool,
+//     },
+// }
+
+// fn main() {
+//     let cli = Cli::parse();
+
+//     // You can check the value provided by positional arguments, or option arguments
+//     if let Some(name) = cli.name.as_deref() {
+//         println!("Value for name: {name}");
+//     }
+
+//     if let Some(config_path) = cli.config.as_deref() {
+//         println!("Value for config: {}", config_path.display());
+//     }
+
+//     // You can see how many times a particular flag or argument occurred
+//     // Note, only flags can have multiple occurrences
+//     match cli.debug {
+//         0 => println!("Debug mode is off"),
+//         1 => println!("Debug mode is kind of on"),
+//         2 => println!("Debug mode is on"),
+//         _ => println!("Don't be crazy"),
+//     }
+
+//     // You can check for the existence of subcommands, and if found use their
+//     // matches just as you would the top level cmd
+//     match &cli.command {
+//         Some(Commands::Test { list }) => {
+//             if *list {
+//                 println!("Printing testing lists...");
+//             } else {
+//                 println!("Not printing testing lists...");
+//             }
+//         }
+//         None => {}
+//     }
+
+//     // Continued program logic goes here...
+// }
