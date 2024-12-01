@@ -16,11 +16,11 @@ pub struct Cli {
 #[derive(Args)]
 pub struct CommonOpts {
     /// Enable verbose output
-    #[arg(short = 'v', long = "verbose", default_value_t = false, display_order = 1000)]
+    #[arg(short = 'v', long = "verbose", default_value_t = false, display_order = 1000, help = "Enable verbose output [default: false]")]
     pub verbose: bool,
 
     /// Enable dry-run mode
-    #[arg(short = 'd', long = "dry-run", default_value_t = false, display_order = 1001)]
+    #[arg(short = 'd', long = "dry-run", default_value_t = false, display_order = 1001, help = "Enable dry-run mode [default: false]")]
     pub dry_run: bool,
 }
 

@@ -7,15 +7,15 @@ pub enum Commands {
     /// Rename files
     Rename {
         /// Enable recursive mode
-        #[arg(short, long, value_name = "RECURSIVE", display_order = 0)]
+        #[arg(short, long, value_name = "RECURSIVE", default_value = "false", default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
         recursive: bool,
 
         /// The pattern to use for renaming
-        #[arg(short, long, value_name = "PATTERN", display_order = 1)]
+        #[arg(short, long, value_name = "PATTERN", display_order = 1, help = "The pattern to use for renaming [default: {artist} - {title}]")]
         pattern: Option<String>,
 
         /// Clean style font
-        #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value_t = true, display_order = 2)]
+        #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value = "true", default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
         clean_style_font: bool,
 
         /// The files to rename
