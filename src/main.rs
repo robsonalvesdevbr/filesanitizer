@@ -6,7 +6,7 @@ fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Some(Commands::Rename { pattern, recursive, paths }) => {
+        Some(Commands::Rename { pattern, recursive,clean_style_font, paths }) => {
 
             if let Some(pattern) = pattern {
                 println!("Pattern to use: {}", pattern);
@@ -18,6 +18,12 @@ fn main() {
                 println!("Recursive mode enabled.");
             } else {
                 println!("Recursive mode disabled.");
+            }
+
+            if clean_style_font {
+                println!("Remove style font enabled.");
+            } else {
+                println!("Remove style font disabled.");
             }
 
             if let Some(paths) = paths {
@@ -59,15 +65,19 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// rename files
+    /// Rename files
     Rename {
         /// Enable recursive mode
         #[arg(short, long, value_name = "RECURSIVE", display_order = 0)]
         recursive: bool,
-        
+
         /// The pattern to use for renaming
         #[arg(short, long, value_name = "PATTERN", display_order = 1)]
         pattern: Option<String>,
+
+        /// Remove style font
+        #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value_t = true, display_order = 2)]
+        clean_style_font: bool,
 
         /// The files to rename
         paths: Option<Vec<PathBuf>>,
