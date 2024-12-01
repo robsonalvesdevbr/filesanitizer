@@ -14,7 +14,7 @@ pub enum Commands {
         #[arg(short, long, value_name = "PATTERN", display_order = 1)]
         pattern: Option<String>,
 
-        /// Remove style font
+        /// Clean style font
         #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value_t = true, display_order = 2)]
         clean_style_font: bool,
 

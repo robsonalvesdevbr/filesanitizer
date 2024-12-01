@@ -2,7 +2,12 @@ use clap::{Args, Parser};
 use crate::commands::Commands;
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(
+    version = concat!("v", env!("CARGO_PKG_VERSION"), " (build ", env!("CARGO_PKG_NAME"), ")"),
+    about = env!("CARGO_PKG_DESCRIPTION"),
+    long_about = env!("CARGO_PKG_DESCRIPTION"),
+    arg_required_else_help = true
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Commands>,

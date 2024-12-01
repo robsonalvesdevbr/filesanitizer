@@ -1,7 +1,14 @@
 [package]
-name = "namesanitizer"
-version = "0.1.0"
-edition = "2021"
+name = "namesanitizer"                                                      # Nome do pacote/projeto.
+version = "0.1.0"                                                           # Versão do pacote. Deve seguir o padrão semântico (major.minor.patch).
+authors = ["Robson Candido dos Santos Alves <contato@robsonalves.dev.br>"]  # Lista de autores do projeto.
+edition = "2021"                                                            # Edição do Rust utilizada (2015, 2018 ou 2021).
+description = "Enfatiza a ideia de (sanitizar) nomes de arquivos e pastas." # Descrição breve do projeto.
+license = "MIT"                                                             # Licença usada no projeto.
+repository = "https://github.com/robsonalvesdevbr/namesanitizer"            # URL do repositório do código-fonte.
+keywords = ["cli", "rename", "rust"]                                        # Palavras-chave que descrevem seu projeto.
+categories = ["command-line-utilities"]                                     # Categoria a que pertence seu projeto (deve ser uma categoria válida do crates.io).
+readme = "README.md"                                                        # Caminho para o arquivo README.
 
 [dependencies]
 clap = { version = "4.5.21", features = ["derive"] }
