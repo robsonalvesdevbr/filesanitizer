@@ -1,4 +1,4 @@
-use clap::{Args, Parser};
+use clap::{Args, Parser,ColorChoice};
 use crate::commands::Commands;
 
 #[derive(Parser)]
@@ -6,6 +6,7 @@ use crate::commands::Commands;
     version = concat!("v", env!("CARGO_PKG_VERSION"), " (build ", env!("CARGO_PKG_NAME"), ")"),
     about = env!("CARGO_PKG_DESCRIPTION"),
     long_about = env!("CARGO_PKG_DESCRIPTION"),
+    color = ColorChoice::Always,
     arg_required_else_help = true
 )]
 pub struct Cli {
