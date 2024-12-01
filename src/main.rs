@@ -1,13 +1,18 @@
 use std::path::PathBuf;
 
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Some(Commands::Rename { pattern, recursive,clean_style_font, paths }) => {
-
+        Some(Commands::Rename {
+            pattern,
+            recursive,
+            clean_style_font,
+            paths,
+            common,
+        }) => {
             if let Some(pattern) = pattern {
                 println!("Pattern to use: {}", pattern);
             } else {
@@ -34,16 +39,35 @@ fn main() {
                 println!("No files provided.");
             }
 
-            // dry-run is a global option
-            if cli.dry_run {
+            if common.dry_run {
                 println!("Dry-run mode enabled.");
+            } else {
+                println!("Dry-run mode disabled.");
+            }
+
+            if common.verbose {
+                println!("Verbose mode enabled.");
+            } else {
+                println!("Verbose mode disabled.");
             }
         }
-        Some(Commands::Test { list }) => {
+        Some(Commands::Test { list, common }) => {
             if list {
                 println!("Listing test values...");
             }
-        },
+
+            if common.dry_run {
+                println!("Dry-run mode enabled.");
+            } else {
+                println!("Dry-run mode disabled.");
+            }
+
+            if common.verbose {
+                println!("Verbose mode enabled.");
+            } else {
+                println!("Verbose mode disabled.");
+            }
+        }
         None => {}
     }
 }
@@ -51,16 +75,32 @@ fn main() {
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
-    /// Turn dry-run on
-    #[arg(short, long, value_name = "DRY_RUN", global = true, default_value_t = false, display_order = 1001)]
-    dry_run: bool,
-
-    /// Turn verbose mode on
-    #[arg(short, long, value_name = "VERBOSE", global = true, default_value_t = false, display_order = 1000)]
-    verbose: bool,
-
+    // Turn dry-run on
+    //#[arg(short, long, value_name = "DRY_RUN", global = true, default_value_t = false, display_order = 1001)]
+    //dry_run: bool,
     #[command(subcommand)]
     command: Option<Commands>,
+}
+
+#[derive(Args)]
+struct CommonOpts {
+    /// Enable verbose output
+    #[arg(
+        short = 'v',
+        long = "verbose",
+        default_value_t = false,
+        display_order = 1000
+    )]
+    verbose: bool,
+
+    /// Enable dry-run mode
+    #[arg(
+        short = 'd',
+        long = "dry-run",
+        default_value_t = false,
+        display_order = 1001
+    )]
+    dry_run: bool,
 }
 
 #[derive(Subcommand)]
@@ -76,86 +116,30 @@ enum Commands {
         pattern: Option<String>,
 
         /// Remove style font
-        #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value_t = true, display_order = 2)]
+        #[arg(
+            short,
+            long,
+            value_name = "CLEAN_STYLE_FONT",
+            default_value_t = true,
+            display_order = 2
+        )]
         clean_style_font: bool,
 
         /// The files to rename
         paths: Option<Vec<PathBuf>>,
+
+        /// Common options for all subcommands
+        #[command(flatten)]
+        common: CommonOpts,
     },
     /// does testing things
     Test {
         /// lists test values
-        #[arg(short, long)]
+        #[arg(short, long, display_order = 0)]
         list: bool,
+
+        /// Common options for all subcommands
+        #[command(flatten)]
+        common: CommonOpts,
     },
 }
-
-
-// use std::path::PathBuf;
-
-// use clap::{Parser, Subcommand};
-
-// #[derive(Parser)]
-// #[command(version, about, long_about = None)]
-// struct Cli {
-//     /// Optional name to operate on
-//     name: Option<String>,
-
-//     /// Sets a custom config file
-//     #[arg(short, long, value_name = "FILE")]
-//     config: Option<PathBuf>,
-
-//     /// Turn debugging information on
-//     #[arg(short, long, action = clap::ArgAction::Count)]
-//     debug: u8,
-
-//     #[command(subcommand)]
-//     command: Option<Commands>,
-// }
-
-// #[derive(Subcommand)]
-// enum Commands {
-//     /// does testing things
-//     Test {
-//         /// lists test values
-//         #[arg(short, long)]
-//         list: bool,
-//     },
-// }
-
-// fn main() {
-//     let cli = Cli::parse();
-
-//     // You can check the value provided by positional arguments, or option arguments
-//     if let Some(name) = cli.name.as_deref() {
-//         println!("Value for name: {name}");
-//     }
-
-//     if let Some(config_path) = cli.config.as_deref() {
-//         println!("Value for config: {}", config_path.display());
-//     }
-
-//     // You can see how many times a particular flag or argument occurred
-//     // Note, only flags can have multiple occurrences
-//     match cli.debug {
-//         0 => println!("Debug mode is off"),
-//         1 => println!("Debug mode is kind of on"),
-//         2 => println!("Debug mode is on"),
-//         _ => println!("Don't be crazy"),
-//     }
-
-//     // You can check for the existence of subcommands, and if found use their
-//     // matches just as you would the top level cmd
-//     match &cli.command {
-//         Some(Commands::Test { list }) => {
-//             if *list {
-//                 println!("Printing testing lists...");
-//             } else {
-//                 println!("Not printing testing lists...");
-//             }
-//         }
-//         None => {}
-//     }
-
-//     // Continued program logic goes here...
-// }
