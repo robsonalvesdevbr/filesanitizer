@@ -80,6 +80,23 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
 
 fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+	let recursive = if _recursive { "Recursive mode enabled." } else { "" };
+	let clean_style_font = if _clean_style_font { "Clean style font enabled." } else { "" };
+	let verbose = if common.verbose { "Verbose mode enabled." } else { "" };
+
+	if dry_run != "" {
+		println!("{}", dry_run.yellow());		
+	}
+	if recursive != "" {
+		println!("{}", recursive.yellow());
+	}
+	if clean_style_font != "" {
+		println!("{}", clean_style_font.yellow());
+	}
+	if verbose != "" {
+		println!("{}", verbose.yellow());
+	}
+		
 
 	if let Some(paths) = paths {
 		for path_argument in paths {
@@ -112,17 +129,6 @@ fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Optio
 	} else {
 		println!("No files provided.");
 	}
-
-	// println!("Recursive mode: {}", if recursive { "Enabled" } else { "Disabled" });
-	// println!("Remove style font: {}", if clean_style_font { "Enabled" } else { "Disabled" });
-
-	// if let Some(paths) = paths {
-	// 	for file in paths {
-	// 		println!("File to rename: {:?}", file);
-	// 	}
-	// } else {
-	// 	println!("No files provided.");
-	// }
 }
 
 #[cfg(test)]
