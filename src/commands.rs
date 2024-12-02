@@ -78,11 +78,28 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
     paths
 }
 
+fn println_line_path_info(path: &Path, common: CommonOpts) {
+	//println!("{}", "-".repeat(80).yellow());
+	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+
+	if path.is_dir() {
+		let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+		println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.blue(), dry_run.yellow());
+		return;
+	}
+	else {
+		let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+		println!("{:<10}: {:<60} {:<10}", "File", new_name.blue(), dry_run.yellow());		
+	}
+}
+
 fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 	let recursive = if _recursive { "Recursive mode enabled." } else { "" };
 	let clean_style_font = if _clean_style_font { "Clean style font enabled." } else { "" };
 	let verbose = if common.verbose { "Verbose mode enabled." } else { "" };
+
+	println!("{}", "-".repeat(100).yellow());
 
 	if dry_run != "" {
 		println!("{}", dry_run.yellow());		
@@ -97,29 +114,16 @@ fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Optio
 		println!("{}", verbose.yellow());
 	}
 		
+	println!("{}", "-".repeat(100).yellow());
 
 	if let Some(paths) = paths {
 		for path_argument in paths {
 			let path = Path::new(&path_argument);
 
 			if path.exists() {
-				let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
-						println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.blue(), "");
+				println_line_path_info(&path, common);
 				for file in read_dir_recursive(&path) {
-					if file.is_dir() {
-						let new_name = file.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
-						println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.blue(), "");
-						continue;
-					}
-
-					if common.dry_run {
-						let new_name = file.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
-						println!("{:<10}: {:<60}... {:<10}", "File", new_name.blue(), dry_run.yellow());
-					}
-					else {
-						println!("File: {}", file.to_str().unwrap_or("Invalid UTF-8").blue());
-					}
-					
+					println_line_path_info(&file, common);				
 				}
 			} else {
 				println!("File not found: {:?}", path_argument);	
