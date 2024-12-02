@@ -1,6 +1,6 @@
 use crate::common::CommonOpts;
 use clap::Subcommand;
-use std::path::PathBuf;
+use std::{fs, path::{Path, PathBuf}};
 
 #[derive(Subcommand)]
 pub enum Commands {
@@ -55,17 +55,56 @@ pub fn handle_command(command: Option<Commands>) {
 	}
 }
 
-fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>) {
-	println!("Recursive mode: {}", if recursive { "Enabled" } else { "Disabled" });
-	println!("Remove style font: {}", if clean_style_font { "Enabled" } else { "Disabled" });
+pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
+    let mut paths = Vec::new();
 
+    if dir.is_dir() {
+        if let Ok(entries) = fs::read_dir(dir) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
+                    // Adiciona o caminho encontrado
+                    paths.push(path.clone());
+                    // Se for um diretório, chama a função recursivamente
+                    if path.is_dir() {
+                        paths.extend(read_dir_recursive(&path));
+                    }
+                }
+            }
+        }
+    }
+
+    paths
+}
+
+fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Option<Vec<PathBuf>>) {
 	if let Some(paths) = paths {
 		for file in paths {
-			println!("File to rename: {:?}", file);
+			let path = Path::new(&file);
+
+			if path.exists() {
+				for file1 in read_dir_recursive(&path) {
+					println!("File: {:?}", file1);
+				}
+			} else {
+				println!("File not found: {:?}", file);	
+			}
+			
 		}
 	} else {
 		println!("No files provided.");
 	}
+
+	// println!("Recursive mode: {}", if recursive { "Enabled" } else { "Disabled" });
+	// println!("Remove style font: {}", if clean_style_font { "Enabled" } else { "Disabled" });
+
+	// if let Some(paths) = paths {
+	// 	for file in paths {
+	// 		println!("File to rename: {:?}", file);
+	// 	}
+	// } else {
+	// 	println!("No files provided.");
+	// }
 }
 
 #[cfg(test)]
