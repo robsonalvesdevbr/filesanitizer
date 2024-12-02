@@ -79,3 +79,46 @@ fn handle_rename_command(
         println!("No files provided.");
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use clap::Parser;
+    use std::path::PathBuf;
+
+    use crate::common::Cli;
+    use crate::commands::Commands;
+
+    #[test]
+    fn test_handle_subcommand_rename_args() {
+        let args = [
+            "test",
+            "rename",
+            "--pattern",
+            "*.txt",
+            "--recursive",
+            "--clean-style-font",
+            "--verbose",
+            "--dry-run",
+            "list.txt",
+        ];
+        let cli = Cli::parse_from(args);
+        if let Some(Commands::Rename {
+            recursive,
+            pattern,
+            clean_style_font,
+            paths,
+            common,
+        }) = cli.command
+        {
+            assert_eq!(recursive, true);
+            assert_eq!(pattern, Some("*.txt".to_string()));
+            assert_eq!(clean_style_font, true);
+            assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]));
+            assert_eq!(common.verbose, true);
+            assert_eq!(common.dry_run, true);
+        } else {
+            panic!("Expected Rename command");
+        }
+    }
+}
