@@ -11,7 +11,7 @@ fn main() {
 }
 
 #[cfg(test)]
-mod tests {
+mod main_tests {
 	use std::path::PathBuf;
 
 	use commands::Commands;

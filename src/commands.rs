@@ -69,7 +69,7 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 }
 
 #[cfg(test)]
-mod tests {
+mod commands_tests {
 	use clap::Parser;
 	use std::path::PathBuf;
 
@@ -81,13 +81,29 @@ mod tests {
 		let args = ["test", "rename", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
 		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
-			assert_eq!(recursive, true);
-			assert_eq!(clean_style_font, true);
-			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]));
-			assert_eq!(common.verbose, true);
-			assert_eq!(common.dry_run, true);
+			assert_eq!(recursive, true, "Expected recursive to be true: {}", recursive);
+			assert_eq!(clean_style_font, true, "Expected clean_style_font to be true: {}", clean_style_font);
+			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
+			assert_eq!(common.verbose, true, "Expected verbose to be true: {}", common.verbose);
+			assert_eq!(common.dry_run, true, "Expected dry_run to be true: {}", common.dry_run);
 		} else {
 			panic!("Expected Rename command");
 		}
 	}
+
+	#[test]
+	fn test_handle_subcommand_rename_args_with_verbose_false() {
+		let args = ["test", "rename", "--recursive", "--clean-style-font", "--dry-run", "list.txt"];
+		let cli = Cli::parse_from(args);
+		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
+			assert_eq!(recursive, true, "Expected recursive to be true: {}", recursive);
+			assert_eq!(clean_style_font, true, "Expected clean_style_font to be true: {}", clean_style_font);
+			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
+			assert_eq!(common.verbose, false, "Expected verbose to be true: {}", common.verbose);
+			assert_eq!(common.dry_run, true, "Expected dry_run to be true: {}", common.dry_run);
+		} else {
+			panic!("Expected Rename command");
+		}
+	}
+	
 }

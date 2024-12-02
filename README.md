@@ -17,7 +17,10 @@ cargo test -- --test-threads=8
 
 # Utils
 ```bash
-cargo fmt
+cargo fmt                     # Formatar todo o código
+cargo install cargo-tarpaulin # Verificar cobertura de test
+cargo tarpaulin
+
 ```
 
 # Exemplos
