@@ -1,21 +1,43 @@
-use std::path::PathBuf;
-use clap::Subcommand;
 use crate::common::CommonOpts;
+use clap::Subcommand;
+use std::path::PathBuf;
 
 #[derive(Subcommand)]
 pub enum Commands {
     /// Rename files
     Rename {
         /// Enable recursive mode
-        #[arg(short, long, value_name = "RECURSIVE", default_value = "false", default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
+        #[arg(
+            short,
+            long,
+            value_name = "RECURSIVE",
+            default_value = "false",
+            default_value_t = false,
+            display_order = 0,
+            help = "Enable recursive mode [default: false]"
+        )]
         recursive: bool,
 
         /// The pattern to use for renaming
-        #[arg(short, long, value_name = "PATTERN", display_order = 1, help = "The pattern to use for renaming [default: {artist} - {title}]")]
+        #[arg(
+            short,
+            long,
+            value_name = "PATTERN",
+            display_order = 1,
+            help = "The pattern to use for renaming [default: {artist} - {title}]"
+        )]
         pattern: Option<String>,
 
         /// Clean style font
-        #[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value = "true", default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
+        #[arg(
+            short,
+            long,
+            value_name = "CLEAN_STYLE_FONT",
+            default_value = "true",
+            default_value_t = true,
+            display_order = 2,
+            help = "Remove style font from the file name [default: true]"
+        )]
         clean_style_font: bool,
 
         /// The files to rename
@@ -67,9 +89,22 @@ fn handle_rename_command(
     clean_style_font: bool,
     paths: Option<Vec<PathBuf>>,
 ) {
-    println!("Pattern to use: {}", pattern.unwrap_or("No pattern provided".to_string()));
-    println!("Recursive mode: {}", if recursive { "Enabled" } else { "Disabled" });
-    println!("Remove style font: {}", if clean_style_font { "Enabled" } else { "Disabled" });
+    println!(
+        "Pattern to use: {}",
+        pattern.unwrap_or("No pattern provided".to_string())
+    );
+    println!(
+        "Recursive mode: {}",
+        if recursive { "Enabled" } else { "Disabled" }
+    );
+    println!(
+        "Remove style font: {}",
+        if clean_style_font {
+            "Enabled"
+        } else {
+            "Disabled"
+        }
+    );
 
     if let Some(paths) = paths {
         for file in paths {
@@ -80,14 +115,13 @@ fn handle_rename_command(
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use clap::Parser;
     use std::path::PathBuf;
 
-    use crate::common::Cli;
     use crate::commands::Commands;
+    use crate::common::Cli;
 
     #[test]
     fn test_handle_subcommand_rename_args() {

@@ -1,5 +1,5 @@
-use clap::{Args, Parser,ColorChoice};
 use crate::commands::Commands;
+use clap::{Args, ColorChoice, Parser};
 
 #[derive(Parser)]
 #[command(
@@ -17,11 +17,23 @@ pub struct Cli {
 #[derive(Args)]
 pub struct CommonOpts {
     /// Enable verbose output
-    #[arg(short = 'v', long = "verbose", default_value_t = false, display_order = 1000, help = "Enable verbose output [default: false]")]
+    #[arg(
+        short = 'v',
+        long = "verbose",
+        default_value_t = false,
+        display_order = 1000,
+        help = "Enable verbose output [default: false]"
+    )]
     pub verbose: bool,
 
     /// Enable dry-run mode
-    #[arg(short = 'd', long = "dry-run", default_value_t = false, display_order = 1001, help = "Enable dry-run mode [default: false]")]
+    #[arg(
+        short = 'd',
+        long = "dry-run",
+        default_value_t = false,
+        display_order = 1001,
+        help = "Enable dry-run mode [default: false]"
+    )]
     pub dry_run: bool,
 }
 
