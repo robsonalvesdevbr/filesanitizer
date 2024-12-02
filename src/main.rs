@@ -9,3 +9,42 @@ fn main() {
     let cli = Cli::parse();
     handle_command(cli.command);
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use commands::Commands;
+    use common::CommonOpts;
+
+    use super::*;
+
+    #[test]
+    fn test_handle_command_rename() {
+        let command = Commands::Rename {
+            pattern: Some("*.txt".to_string()),
+            recursive: true,
+            clean_style_font: false,
+            paths: Some(vec![PathBuf::from("file.txt")]),
+            common: CommonOpts {
+                verbose: true,
+                dry_run: false,
+            },
+        };
+
+        handle_command(Some(command));
+    }
+
+    #[test]
+    fn test_handle_command_test() {
+        let command = Commands::Test {
+            list: true,
+            common: CommonOpts {
+                verbose: true,
+                dry_run: false,
+            },
+        };
+
+        handle_command(Some(command));
+    }
+}
