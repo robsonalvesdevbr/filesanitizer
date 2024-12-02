@@ -11,8 +11,8 @@ pub enum Commands {
 		recursive: bool,
 
 		/// The pattern to use for renaming
-		#[arg(short, long, value_name = "PATTERN", display_order = 1, help = "The pattern to use for renaming [default: {artist} - {title}]")]
-		pattern: Option<String>,
+		//#[arg(short, long, value_name = "PATTERN", display_order = 1, help = "The pattern to use for renaming [default: {artist} - {title}]")]
+		//pattern: Option<String>,
 
 		/// Clean style font
 		#[arg(short, long, value_name = "CLEAN_STYLE_FONT", default_value = "true", default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
@@ -39,8 +39,8 @@ pub enum Commands {
 
 pub fn handle_command(command: Option<Commands>) {
 	match command {
-		Some(Commands::Rename { pattern, recursive, clean_style_font, paths, common }) => {
-			handle_rename_command(pattern, recursive, clean_style_font, paths);
+		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
+			handle_rename_command(recursive, clean_style_font, paths);
 			common.handle_common_opts();
 		}
 		Some(Commands::Test { list, common }) => {
@@ -55,8 +55,7 @@ pub fn handle_command(command: Option<Commands>) {
 	}
 }
 
-fn handle_rename_command(pattern: Option<String>, recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>) {
-	println!("Pattern to use: {}", pattern.unwrap_or("No pattern provided".to_string()));
+fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>) {
 	println!("Recursive mode: {}", if recursive { "Enabled" } else { "Disabled" });
 	println!("Remove style font: {}", if clean_style_font { "Enabled" } else { "Disabled" });
 
@@ -79,21 +78,10 @@ mod tests {
 
 	#[test]
 	fn test_handle_subcommand_rename_args() {
-		let args = [
-			"test",
-			"rename",
-			"--pattern",
-			"*.txt",
-			"--recursive",
-			"--clean-style-font",
-			"--verbose",
-			"--dry-run",
-			"list.txt",
-		];
+		let args = ["test", "rename", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
-		if let Some(Commands::Rename { recursive, pattern, clean_style_font, paths, common }) = cli.command {
+		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
 			assert_eq!(recursive, true);
-			assert_eq!(pattern, Some("*.txt".to_string()));
 			assert_eq!(clean_style_font, true);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]));
 			assert_eq!(common.verbose, true);
