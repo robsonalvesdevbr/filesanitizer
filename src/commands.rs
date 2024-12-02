@@ -1,5 +1,6 @@
 use crate::common::CommonOpts;
 use clap::Subcommand;
+use colored::Colorize;
 use std::{fs, path::{Path, PathBuf}};
 
 #[derive(Subcommand)]
@@ -40,8 +41,8 @@ pub enum Commands {
 pub fn handle_command(command: Option<Commands>) {
 	match command {
 		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
-			handle_rename_command(recursive, clean_style_font, paths);
-			common.handle_common_opts();
+			handle_rename_command(recursive, clean_style_font, paths, common);
+			//common.handle_common_opts();
 		}
 		Some(Commands::Test { list, common }) => {
 			if list {
@@ -77,17 +78,34 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
     paths
 }
 
-fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Option<Vec<PathBuf>>) {
+fn handle_rename_command(_recursive: bool, _clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
+	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+
 	if let Some(paths) = paths {
-		for file in paths {
-			let path = Path::new(&file);
+		for path_argument in paths {
+			let path = Path::new(&path_argument);
 
 			if path.exists() {
-				for file1 in read_dir_recursive(&path) {
-					println!("File: {:?}", file1);
+				let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+						println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.blue(), "");
+				for file in read_dir_recursive(&path) {
+					if file.is_dir() {
+						let new_name = file.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+						println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.blue(), "");
+						continue;
+					}
+
+					if common.dry_run {
+						let new_name = file.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+						println!("{:<10}: {:<60}... {:<10}", "File", new_name.blue(), dry_run.yellow());
+					}
+					else {
+						println!("File: {}", file.to_str().unwrap_or("Invalid UTF-8").blue());
+					}
+					
 				}
 			} else {
-				println!("File not found: {:?}", file);	
+				println!("File not found: {:?}", path_argument);	
 			}
 			
 		}
