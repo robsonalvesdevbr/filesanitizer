@@ -17,7 +17,14 @@ mod tests {
     use commands::Commands;
     use common::CommonOpts;
 
-    use super::*;    
+    use super::*;
+
+    #[test]
+    fn test_handle_command_rename_no_paths() {
+        let args = ["test", "rename", "--pattern", "*.txt", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "C:\\temp\\list.txt"];
+        let cli = Cli::parse_from(args);
+        handle_command(cli.command);
+    }    
 
     #[test]
     fn test_handle_command_rename() {
