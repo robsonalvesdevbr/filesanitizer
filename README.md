@@ -15,6 +15,11 @@ cargo run -- --help
 cargo test -- --test-threads=8
 ```
 
+# Utils
+```bash
+cargo fmt
+```
+
 # Exemplos
 
 https://docs.rs/clap/latest/clap/_derive/_tutorial/chapter_0/index.html
