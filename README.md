@@ -12,6 +12,7 @@ cargo add clap --features derive # A flag features = ["derive"] permite usar mac
 
 ```bash
 cargo run -- --help
+cargo test -- --test-threads=8
 ```
 
 # Exemplos

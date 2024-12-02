@@ -17,7 +17,7 @@ mod tests {
     use commands::Commands;
     use common::CommonOpts;
 
-    use super::*;
+    use super::*;    
 
     #[test]
     fn test_handle_command_rename() {
@@ -46,5 +46,10 @@ mod tests {
         };
 
         handle_command(Some(command));
+    }
+
+    #[test]
+    fn test_handle_command_none() {
+        handle_command(None);
     }
 }
