@@ -21,7 +21,17 @@ mod tests {
 
 	#[test]
 	fn test_handle_command_rename_all_args() {
-		let args = ["test", "rename", "--pattern", "*.txt", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
+		let args = [
+			"test",
+			"rename",
+			"--pattern",
+			"*.txt",
+			"--recursive",
+			"--clean-style-font",
+			"--verbose",
+			"--dry-run",
+			"list.txt",
+		];
 		let cli = Cli::parse_from(args);
 		handle_command(cli.command);
 	}

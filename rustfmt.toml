@@ -1,4 +1,6 @@
-max_width = 800       # Largura máxima da linha
-hard_tabs = true     # Usar espaços ao invés de tabulação
-tab_spaces = 4        # Número de espaços para cada tabulação
+max_width = 800                  # Largura máxima da linha
+hard_tabs = true                 # Usar espaços ao invés de tabulação
+tab_spaces = 4                   # Número de espaços para cada tabulação
 use_small_heuristics = "Default" # Sempre aplicar heurísticas para pequenas mudanças
+array_width = 100                # Define a largura máxima de arrays antes de quebrar as linhas.
+reorder_imports = true           # Reorganiza os imports em ordem alfabética.

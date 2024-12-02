@@ -79,7 +79,17 @@ mod tests {
 
 	#[test]
 	fn test_handle_subcommand_rename_args() {
-		let args = ["test", "rename", "--pattern", "*.txt", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
+		let args = [
+			"test",
+			"rename",
+			"--pattern",
+			"*.txt",
+			"--recursive",
+			"--clean-style-font",
+			"--verbose",
+			"--dry-run",
+			"list.txt",
+		];
 		let cli = Cli::parse_from(args);
 		if let Some(Commands::Rename { recursive, pattern, clean_style_font, paths, common }) = cli.command {
 			assert_eq!(recursive, true);
