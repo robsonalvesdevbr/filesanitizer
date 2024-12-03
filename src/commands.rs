@@ -79,13 +79,15 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
-	let name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
-	let new_name = new_path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+	let name = path.to_str().unwrap_or("Invalid UTF-8");
+	let new_name = new_path.to_str().unwrap_or("Invalid UTF-8");
+	let name_group = format!("{} -> {:<130}", name, new_name).chars().take(130).collect::<String>();
 
 	if path.is_dir() {
 		println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
 	} else {
-		println!("{:<10}: {:<130} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()), dry_run.yellow());
+		//println!("{:<10}: {:<130} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()).chars().take(130).collect::<String>(), dry_run.yellow());
+		println!("{:<10}: {} {:<10}", "File", name_group.blue(), dry_run.yellow());
 	}
 }
 
