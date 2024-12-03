@@ -18,7 +18,9 @@ cargo test -- --nocapture
 ```
 
 # Utils
+
 ```bash
+rustup component add rustfmt clippy
 cargo fmt                     # Formatar todo o código
 cargo install cargo-tarpaulin # Verificar cobertura de test
 cargo tarpaulin
