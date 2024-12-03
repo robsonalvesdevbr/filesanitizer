@@ -87,6 +87,21 @@ fn println_line_path_info(path: &Path, common: CommonOpts) {
 	}
 }
 
+fn rename_file(file: &Path, _clean_style_font: bool, dry_run: bool) {
+	if !file.is_file() {
+		return;
+	}
+
+	let new_name_with_timestamp = format!("{}{}", chrono::Local::now().format("%Y%m%d_%H%M%S_"), file.file_name().unwrap().to_str().unwrap());
+	let new_path = file.with_file_name(new_name_with_timestamp);
+
+	if dry_run {
+		println!("Renaming {:?} to {:?}", file, new_path);
+	} else {
+		fs::rename(file, new_path).unwrap();
+	}
+}
+
 fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 	let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
@@ -117,6 +132,7 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 			if path.exists() {
 				println_line_path_info(path, common);
 				for file in read_dir_recursive(path) {
+					rename_file(&file, clean_style_font, common.dry_run);
 					println_line_path_info(&file, common);
 				}
 			} else {
