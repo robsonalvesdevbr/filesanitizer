@@ -140,7 +140,12 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 					match generate_new_name_with_timestamp(&file) {
 						Some(new_path) => {
 							if !common.dry_run {
-								fs::rename(file.clone(), new_path.clone()).unwrap();
+								if file.exists() {
+									fs::rename(file.clone(), new_path.clone()).unwrap();
+								} else {
+									println!("File not found: {:?}", file);
+									continue;
+								}
 							}
 							println_line_path_info(&file.clone(), &new_path.clone(), common);
 						}
