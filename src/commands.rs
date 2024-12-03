@@ -1,6 +1,7 @@
 use crate::common::CommonOpts;
 use clap::Subcommand;
 use colored::Colorize;
+use regex::Regex;
 use std::{
 	fs,
 	path::{Path, PathBuf},
@@ -95,6 +96,13 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	if !file.is_file() {
 		return Some(file.to_path_buf());
 	}
+
+	// Usar expressão regular para pegar o timestamp do arquivo
+	let re = Regex::new(r"(\d{8}_\d{6})").unwrap();
+	if re.is_match(file.file_name().unwrap().to_str().unwrap()) {
+		return None;
+	}
+
 	let metadata = fs::metadata(file).unwrap();
 	let created = metadata.created().unwrap();
 	let created: chrono::DateTime<chrono::Local> = created.into();
@@ -150,7 +158,7 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 							println_line_path_info(&file.clone(), &new_path.clone(), common);
 						}
 						None => {
-							println!("File not found: {:?}", path_argument);
+							continue;
 						}
 					}
 				}
