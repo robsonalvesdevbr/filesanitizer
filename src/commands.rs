@@ -3,7 +3,7 @@ use clap::Subcommand;
 use colored::Colorize;
 use regex::Regex;
 use std::{
-	fs,
+	env, fs,
 	path::{Path, PathBuf},
 };
 
@@ -42,7 +42,18 @@ pub fn handle_command(command: Option<Commands>) {
 	match command {
 		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
 			let processor = RenameProcessor::new(recursive, clean_style_font, common);
-			processor.process(paths);
+			let direct = match &paths {
+				Some(paths) => Some(paths.clone()),
+				None => match env::current_dir() {
+					Ok(path) => Some(vec![path]),
+					Err(e) => {
+						println!("Error: {}", e);
+						None
+					}
+				},
+			};
+
+			processor.process(direct);
 		}
 		Some(Commands::Test { list, common }) => {
 			if list {
