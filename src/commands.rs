@@ -59,13 +59,11 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
 
 	if dir.is_dir() {
 		if let Ok(entries) = fs::read_dir(dir) {
-			for entry in entries {
-				if let Ok(entry) = entry {
-					let path = entry.path();
-					paths.push(path.clone());
-					if path.is_dir() {
-						paths.extend(read_dir_recursive(&path));
-					}
+			for entry in entries.flatten() {
+				let path = entry.path();
+				paths.push(path.clone());
+				if path.is_dir() {
+					paths.extend(read_dir_recursive(&path));
 				}
 			}
 		}
@@ -139,11 +137,11 @@ mod commands_tests {
 		let args = ["test", "rename", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
 		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
-			assert_eq!(recursive, true, "Expected recursive to be true: {}", recursive);
-			assert_eq!(clean_style_font, true, "Expected clean_style_font to be true: {}", clean_style_font);
+			assert!(recursive, "Expected recursive to be true: {}", recursive);
+			assert!(clean_style_font, "Expected clean_style_font to be true: {}", clean_style_font);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
-			assert_eq!(common.verbose, true, "Expected verbose to be true: {}", common.verbose);
-			assert_eq!(common.dry_run, true, "Expected dry_run to be true: {}", common.dry_run);
+			assert!(common.verbose, "Expected verbose to be true: {}", common.verbose);
+			assert!(common.dry_run, "Expected dry_run to be true: {}", common.dry_run);
 		} else {
 			panic!("Expected Rename command");
 		}
@@ -154,11 +152,11 @@ mod commands_tests {
 		let args = ["test", "rename", "--recursive", "--clean-style-font", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
 		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
-			assert_eq!(recursive, true, "Expected recursive to be true: {}", recursive);
-			assert_eq!(clean_style_font, true, "Expected clean_style_font to be true: {}", clean_style_font);
+			assert!(recursive, "Expected recursive to be true: {}", recursive);
+			assert!(clean_style_font, "Expected clean_style_font to be true: {}", clean_style_font);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
-			assert_eq!(common.verbose, false, "Expected verbose to be true: {}", common.verbose);
-			assert_eq!(common.dry_run, true, "Expected dry_run to be true: {}", common.dry_run);
+			assert!(!common.verbose, "Expected verbose to be true: {}", common.verbose);
+			assert!(common.dry_run, "Expected dry_run to be true: {}", common.dry_run);
 		} else {
 			panic!("Expected Rename command");
 		}
