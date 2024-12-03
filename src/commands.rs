@@ -41,7 +41,8 @@ pub enum Commands {
 pub fn handle_command(command: Option<Commands>) {
 	match command {
 		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
-			handle_rename_command(recursive, clean_style_font, paths, common);
+			let processor = RenameProcessor::new(recursive, clean_style_font, common);
+			processor.process(paths);
 		}
 		Some(Commands::Test { list, common }) => {
 			if list {
@@ -111,68 +112,80 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	Some(new_path)
 }
 
-fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
-	print_command_info(recursive, clean_style_font, common);
-
-	if let Some(paths) = paths {
-		for path_argument in paths {
-			let path = Path::new(&path_argument);
-
-			if path.exists() {
-				process_path(path, common);
-			} else {
-				println!("File not found: {:?}", path_argument);
-			}
-		}
-	} else {
-		println!("No files provided.");
-	}
+struct RenameProcessor {
+	recursive: bool,
+	clean_style_font: bool,
+	common: CommonOpts,
 }
 
-fn print_command_info(recursive: bool, clean_style_font: bool, common: CommonOpts) {
-	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
-	let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
-	let clean_style_font_msg = if clean_style_font { "Clean style font enabled." } else { "" };
-	let verbose = if common.verbose { "Verbose mode enabled." } else { "" };
-
-	println!("{}", "-".repeat(100).yellow());
-
-	if !dry_run.is_empty() {
-		println!("{}", dry_run.yellow());
-	}
-	if !recursive_msg.is_empty() {
-		println!("{}", recursive_msg.yellow());
-	}
-	if !clean_style_font_msg.is_empty() {
-		println!("{}", clean_style_font_msg.yellow());
-	}
-	if !verbose.is_empty() {
-		println!("{}", verbose.yellow());
+impl RenameProcessor {
+	fn new(recursive: bool, clean_style_font: bool, common: CommonOpts) -> Self {
+		Self { recursive, clean_style_font, common }
 	}
 
-	println!("{}", "-".repeat(100).yellow());
-}
+	fn process(&self, paths: Option<Vec<PathBuf>>) {
+		self.print_command_info();
 
-fn process_path(path: &Path, common: CommonOpts) {
-	println_line_path_info(path, path, common);
-	for file in read_dir_recursive(path) {
-		let arq = normalize_unicode(file.to_str().unwrap());
-		let arq = PathBuf::from(arq);
+		if let Some(paths) = paths {
+			for path_argument in paths {
+				let path = Path::new(&path_argument);
 
-		match generate_new_name_with_timestamp(&arq) {
-			Some(new_path) => {
-				if !common.dry_run {
-					if file.exists() {
-						fs::rename(file.clone(), new_path.clone()).unwrap();
-					} else {
-						println!("File not found: {:?}", file);
-						continue;
-					}
+				if path.exists() {
+					self.process_path(path);
+				} else {
+					println!("File not found: {:?}", path_argument);
 				}
-				println_line_path_info(&file.clone(), &new_path.clone(), common);
 			}
-			None => {
-				continue;
+		} else {
+			println!("No files provided.");
+		}
+	}
+
+	fn print_command_info(&self) {
+		let dry_run = if self.common.dry_run { "Dry-run mode enabled." } else { "" };
+		let recursive_msg = if self.recursive { "Recursive mode enabled." } else { "" };
+		let clean_style_font_msg = if self.clean_style_font { "Clean style font enabled." } else { "" };
+		let verbose = if self.common.verbose { "Verbose mode enabled." } else { "" };
+
+		println!("{}", "-".repeat(100).yellow());
+
+		if !dry_run.is_empty() {
+			println!("{}", dry_run.yellow());
+		}
+		if !recursive_msg.is_empty() {
+			println!("{}", recursive_msg.yellow());
+		}
+		if !clean_style_font_msg.is_empty() {
+			println!("{}", clean_style_font_msg.yellow());
+		}
+		if !verbose.is_empty() {
+			println!("{}", verbose.yellow());
+		}
+
+		println!("{}", "-".repeat(100).yellow());
+	}
+
+	fn process_path(&self, path: &Path) {
+		println_line_path_info(path, path, self.common);
+		for file in read_dir_recursive(path) {
+			let arq = normalize_unicode(file.to_str().unwrap());
+			let arq = PathBuf::from(arq);
+
+			match generate_new_name_with_timestamp(&arq) {
+				Some(new_path) => {
+					if !self.common.dry_run {
+						if file.exists() {
+							fs::rename(file.clone(), new_path.clone()).unwrap();
+						} else {
+							println!("File not found: {:?}", file);
+							continue;
+						}
+					}
+					println_line_path_info(&file.clone(), &new_path.clone(), self.common);
+				}
+				None => {
+					continue;
+				}
 			}
 		}
 	}
