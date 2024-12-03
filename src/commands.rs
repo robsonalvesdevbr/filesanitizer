@@ -72,35 +72,38 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
 	paths
 }
 
-fn println_line_path_info(path: &Path, common: CommonOpts) {
+fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 	if !common.verbose {
 		return;
 	}
 
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
-	let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+	let name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+	let new_name = new_path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+
 	if path.is_dir() {
-		println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.bold().blue(), dry_run.yellow());
+		println!("{:<10}: {:<60} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
 	} else {
-		println!("{:<10}: {:<60} {:<10}", "File", new_name.blue(), dry_run.yellow());
+		println!("{:<10}: {:<60} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()), dry_run.yellow());
 	}
 }
 
-fn rename_file(file: &Path, _clean_style_font: bool, dry_run: bool) {
+fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	if !file.is_file() {
-		return;
+		return None;
 	}
-
-	let new_name_with_timestamp = format!("{}{}", chrono::Local::now().format("%Y%m%d_%H%M%S_"), file.file_name().unwrap().to_str().unwrap());
+	let metadata = fs::metadata(file).unwrap();
+	let created = metadata.created().unwrap();
+	let created: chrono::DateTime<chrono::Local> = created.into();
+	let new_name_with_timestamp = format!("{}{}", created.format("%Y%m%d_%H%M%S_"), file.file_name().unwrap().to_str().unwrap());
 	let new_path = file.with_file_name(new_name_with_timestamp);
-
-	if dry_run {
-		println!("Renaming {:?} to {:?}", file, new_path);
-	} else {
-		fs::rename(file, new_path).unwrap();
-	}
+	Some(new_path)
 }
+
+// fn rename_file(file: &Path, new_file: &Path) -> bool {
+// 	fs::rename(file, new_file).is_ok()
+// }
 
 fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
@@ -130,10 +133,19 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 			let path = Path::new(&path_argument);
 
 			if path.exists() {
-				println_line_path_info(path, common);
+				//println_line_path_info(path, common);
 				for file in read_dir_recursive(path) {
-					rename_file(&file, clean_style_font, common.dry_run);
-					println_line_path_info(&file, common);
+					match generate_new_name_with_timestamp(&file) {
+						Some(new_path) => {
+							if !common.dry_run {
+								fs::rename(file.clone(), new_path.clone()).unwrap();
+							}
+							println_line_path_info(&file.clone(), &new_path.clone(), common);
+						}
+						None => {
+							println!("File not found: {:?}", path_argument);
+						}
+					}
 				}
 			} else {
 				println!("File not found: {:?}", path_argument);
