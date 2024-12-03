@@ -56,7 +56,7 @@ pub fn handle_command(command: Option<Commands>) {
 	}
 }
 
-pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
+pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
 	let mut paths = Vec::new();
 
 	if dir.is_dir() {
@@ -64,8 +64,8 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
 			for entry in entries.flatten() {
 				let path = entry.path();
 				paths.push(path.clone());
-				if path.is_dir() {
-					paths.extend(read_dir_recursive(&path));
+				if path.is_dir() && recursive {
+					paths.extend(read_dir_recursive(&path, recursive));
 				}
 			}
 		}
@@ -167,7 +167,7 @@ impl RenameProcessor {
 
 	fn process_path(&self, path: &Path) {
 		println_line_path_info(path, path, self.common);
-		for file in read_dir_recursive(path) {
+		for file in read_dir_recursive(path, self.recursive) {
 			let arq = normalize_unicode(file.to_str().unwrap());
 			let arq = PathBuf::from(arq);
 
