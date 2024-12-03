@@ -83,9 +83,9 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 	let new_name = new_path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
 
 	if path.is_dir() {
-		println!("{:<10}: {:<60} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
+		println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
 	} else {
-		println!("{:<10}: {:<60} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()), dry_run.yellow());
+		println!("{:<10}: {:<130} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()), dry_run.yellow());
 	}
 }
 
