@@ -9,6 +9,7 @@ cargo add clap --features derive # A flag features = ["derive"] permite usar mac
 cargo add colored
 cargo add chrono
 cargo add regex
+cargo add unicode-normalization
 ```
 
 # Build/Run/Test

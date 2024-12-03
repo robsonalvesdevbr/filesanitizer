@@ -15,3 +15,4 @@ chrono = "0.4.38"
 clap = { version = "4.5.21", features = ["derive"] }
 colored = "2.1.0"
 regex = "1.11.1"
+unicode-normalization = "0.1.24"

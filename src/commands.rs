@@ -1,4 +1,4 @@
-use crate::common::CommonOpts;
+use crate::{common::CommonOpts, utils::normalize_filename};
 use clap::Subcommand;
 use colored::Colorize;
 use regex::Regex;
@@ -141,7 +141,10 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 			if path.exists() {
 				println_line_path_info(path, path, common);
 				for file in read_dir_recursive(path) {
-					match generate_new_name_with_timestamp(&file) {
+					let arq = normalize_filename(file.to_str().unwrap());
+					let arq = PathBuf::from(arq);
+
+					match generate_new_name_with_timestamp(&arq) {
 						Some(new_path) => {
 							if !common.dry_run {
 								if file.exists() {
