@@ -1,0 +1,50 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug",
+      "program": "${workspaceFolder}/target/debug/namesanitizer",
+      "args": ["rename", "--verbose", "C:\\temp"],
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'namesanitizer'",
+      "cargo": {
+        "args": ["build", "--bin=namesanitizer", "--package=namesanitizer"],
+        "filter": {
+          "name": "namesanitizer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'namesanitizer'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=namesanitizer",
+          "--package=namesanitizer"
+        ],
+        "filter": {
+          "name": "namesanitizer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

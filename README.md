@@ -7,6 +7,7 @@ Enfatiza a ideia de "sanitizar" nomes de arquivos e pastas.
 ```bash
 cargo add clap --features derive # A flag features = ["derive"] permite usar macros derivadas para facilitar a definição de argumentos de linha de comando.
 cargo add colored
+cargo add chrono
 ```
 
 # Build/Run/Test
