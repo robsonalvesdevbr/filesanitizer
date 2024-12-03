@@ -73,6 +73,10 @@ pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
 }
 
 fn println_line_path_info(path: &Path, common: CommonOpts) {
+	if !common.verbose {
+		return;
+	}
+
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
 	let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
@@ -155,7 +159,7 @@ mod commands_tests {
 			assert!(recursive, "Expected recursive to be true: {}", recursive);
 			assert!(clean_style_font, "Expected clean_style_font to be true: {}", clean_style_font);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
-			assert!(!common.verbose, "Expected verbose to be true: {}", common.verbose);
+			assert!(!common.verbose, "Expected verbose to be false: {}", common.verbose);
 			assert!(common.dry_run, "Expected dry_run to be true: {}", common.dry_run);
 		} else {
 			panic!("Expected Rename command");
