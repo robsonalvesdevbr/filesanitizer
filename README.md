@@ -10,6 +10,7 @@ cargo add colored
 cargo add chrono
 cargo add regex
 cargo add unicode-normalization
+cargo add unicode-general-category
 ```
 
 # Build/Run/Test

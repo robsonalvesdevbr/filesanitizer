@@ -255,6 +255,7 @@ dependencies = [
  "clap",
  "colored",
  "regex",
+ "unicode-general-category",
  "unicode-normalization",
 ]
 
@@ -357,6 +358,12 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
+
+[[package]]
+name = "unicode-general-category"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "24adfe8311434967077a6adff125729161e6e4934d76f6b7c55318ac5c9246d3"
 
 [[package]]
 name = "unicode-ident"
