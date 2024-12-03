@@ -91,7 +91,7 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 
 fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	if !file.is_file() {
-		return None;
+		return Some(file.to_path_buf());
 	}
 	let metadata = fs::metadata(file).unwrap();
 	let created = metadata.created().unwrap();
@@ -133,7 +133,7 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 			let path = Path::new(&path_argument);
 
 			if path.exists() {
-				//println_line_path_info(path, common);
+				println_line_path_info(path, path, common);
 				for file in read_dir_recursive(path) {
 					match generate_new_name_with_timestamp(&file) {
 						Some(new_path) => {
