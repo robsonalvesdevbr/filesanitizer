@@ -112,6 +112,24 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 }
 
 fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
+	print_command_info(recursive, clean_style_font, common);
+
+	if let Some(paths) = paths {
+		for path_argument in paths {
+			let path = Path::new(&path_argument);
+
+			if path.exists() {
+				process_path(path, common);
+			} else {
+				println!("File not found: {:?}", path_argument);
+			}
+		}
+	} else {
+		println!("No files provided.");
+	}
+}
+
+fn print_command_info(recursive: bool, clean_style_font: bool, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 	let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
 	let clean_style_font_msg = if clean_style_font { "Clean style font enabled." } else { "" };
@@ -133,40 +151,30 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 	}
 
 	println!("{}", "-".repeat(100).yellow());
+}
 
-	if let Some(paths) = paths {
-		for path_argument in paths {
-			let path = Path::new(&path_argument);
+fn process_path(path: &Path, common: CommonOpts) {
+	println_line_path_info(path, path, common);
+	for file in read_dir_recursive(path) {
+		let arq = normalize_unicode(file.to_str().unwrap());
+		let arq = PathBuf::from(arq);
 
-			if path.exists() {
-				println_line_path_info(path, path, common);
-				for file in read_dir_recursive(path) {
-					let arq = normalize_unicode(file.to_str().unwrap());
-					let arq = PathBuf::from(arq);
-
-					match generate_new_name_with_timestamp(&arq) {
-						Some(new_path) => {
-							if !common.dry_run {
-								if file.exists() {
-									fs::rename(file.clone(), new_path.clone()).unwrap();
-								} else {
-									println!("File not found: {:?}", file);
-									continue;
-								}
-							}
-							println_line_path_info(&file.clone(), &new_path.clone(), common);
-						}
-						None => {
-							continue;
-						}
+		match generate_new_name_with_timestamp(&arq) {
+			Some(new_path) => {
+				if !common.dry_run {
+					if file.exists() {
+						fs::rename(file.clone(), new_path.clone()).unwrap();
+					} else {
+						println!("File not found: {:?}", file);
+						continue;
 					}
 				}
-			} else {
-				println!("File not found: {:?}", path_argument);
+				println_line_path_info(&file.clone(), &new_path.clone(), common);
+			}
+			None => {
+				continue;
 			}
 		}
-	} else {
-		println!("No files provided.");
 	}
 }
 
