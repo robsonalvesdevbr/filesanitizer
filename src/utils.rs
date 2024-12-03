@@ -14,9 +14,6 @@ trait IsMarkNonspacing {
 
 impl IsMarkNonspacing for char {
 	fn is_mark_nonspacing(&self) -> bool {
-		match unicode_general_category::get_general_category(*self) {
-			unicode_general_category::GeneralCategory::NonspacingMark => true,
-			_ => false,
-		}
+		matches!(unicode_general_category::get_general_category(*self), unicode_general_category::GeneralCategory::NonspacingMark)
 	}
 }
