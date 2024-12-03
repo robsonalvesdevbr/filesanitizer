@@ -111,10 +111,6 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	Some(new_path)
 }
 
-// fn rename_file(file: &Path, new_file: &Path) -> bool {
-// 	fs::rename(file, new_file).is_ok()
-// }
-
 fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 	let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
