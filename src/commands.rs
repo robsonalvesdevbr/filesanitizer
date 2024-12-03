@@ -111,8 +111,8 @@ fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<
 			let path = Path::new(&path_argument);
 
 			if path.exists() {
-				println_line_path_info(&path, common);
-				for file in read_dir_recursive(&path) {
+				println_line_path_info(path, common);
+				for file in read_dir_recursive(path) {
 					println_line_path_info(&file, common);
 				}
 			} else {
