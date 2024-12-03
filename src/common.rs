@@ -14,7 +14,7 @@ pub struct Cli {
 	pub command: Option<Commands>,
 }
 
-#[derive(Args,Clone, Copy)]
+#[derive(Args, Clone, Copy)]
 pub struct CommonOpts {
 	/// Enable verbose output
 	#[arg(short = 'v', long = "verbose", default_value_t = false, display_order = 1000, help = "Enable verbose output [default: false]")]

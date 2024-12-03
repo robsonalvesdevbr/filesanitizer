@@ -1,126 +1,129 @@
 use crate::common::CommonOpts;
 use clap::Subcommand;
 use colored::Colorize;
-use std::{fs, path::{Path, PathBuf}};
+use std::{
+	fs,
+	path::{Path, PathBuf},
+};
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Rename files
-    Rename {
-        /// Enable recursive mode
-        #[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
-        recursive: bool,
+	/// Rename files
+	Rename {
+		/// Enable recursive mode
+		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
+		recursive: bool,
 
-        /// Clean style font
-        #[arg(short, long, default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
-        clean_style_font: bool,
+		/// Clean style font
+		#[arg(short, long, default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
+		clean_style_font: bool,
 
-        /// The files to rename
-        paths: Option<Vec<PathBuf>>,
+		/// The files to rename
+		paths: Option<Vec<PathBuf>>,
 
-        /// Common options for all subcommands
-        #[command(flatten)]
-        common: CommonOpts,
-    },
-    /// Does testing things
-    Test {
-        /// Lists test values
-        #[arg(short, long, display_order = 0)]
-        list: bool,
+		/// Common options for all subcommands
+		#[command(flatten)]
+		common: CommonOpts,
+	},
+	/// Does testing things
+	Test {
+		/// Lists test values
+		#[arg(short, long, display_order = 0)]
+		list: bool,
 
-        /// Common options for all subcommands
-        #[command(flatten)]
-        common: CommonOpts,
-    },
+		/// Common options for all subcommands
+		#[command(flatten)]
+		common: CommonOpts,
+	},
 }
 
 pub fn handle_command(command: Option<Commands>) {
-    match command {
-        Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
-            handle_rename_command(recursive, clean_style_font, paths, common);
-        }
-        Some(Commands::Test { list, common }) => {
-            if list {
-                println!("Listing test values...");
-            }
-            common.handle_common_opts();
-        }
-        None => {
-            println!("Nenhum comando fornecido. Utilize --help para mais informações.");
-        }
-    }
+	match command {
+		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
+			handle_rename_command(recursive, clean_style_font, paths, common);
+		}
+		Some(Commands::Test { list, common }) => {
+			if list {
+				println!("Listing test values...");
+			}
+			common.handle_common_opts();
+		}
+		None => {
+			println!("Nenhum comando fornecido. Utilize --help para mais informações.");
+		}
+	}
 }
 
 pub fn read_dir_recursive(dir: &Path) -> Vec<PathBuf> {
-    let mut paths = Vec::new();
+	let mut paths = Vec::new();
 
-    if dir.is_dir() {
-        if let Ok(entries) = fs::read_dir(dir) {
-            for entry in entries {
-                if let Ok(entry) = entry {
-                    let path = entry.path();
-                    paths.push(path.clone());
-                    if path.is_dir() {
-                        paths.extend(read_dir_recursive(&path));
-                    }
-                }
-            }
-        }
-    }
+	if dir.is_dir() {
+		if let Ok(entries) = fs::read_dir(dir) {
+			for entry in entries {
+				if let Ok(entry) = entry {
+					let path = entry.path();
+					paths.push(path.clone());
+					if path.is_dir() {
+						paths.extend(read_dir_recursive(&path));
+					}
+				}
+			}
+		}
+	}
 
-    paths
+	paths
 }
 
 fn println_line_path_info(path: &Path, common: CommonOpts) {
-    let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
-    let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
-    if path.is_dir() {
-        println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.bold().blue(), dry_run.yellow());
-    } else {
-        println!("{:<10}: {:<60} {:<10}", "File", new_name.blue(), dry_run.yellow());
-    }
+	let new_name = path.to_str().unwrap_or("Invalid UTF-8").chars().take(50).collect::<String>();
+	if path.is_dir() {
+		println!("{:<10}: {:<60} {:<10}", "Diretório", new_name.bold().blue(), dry_run.yellow());
+	} else {
+		println!("{:<10}: {:<60} {:<10}", "File", new_name.blue(), dry_run.yellow());
+	}
 }
 
 fn handle_rename_command(recursive: bool, clean_style_font: bool, paths: Option<Vec<PathBuf>>, common: CommonOpts) {
-    let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
-    let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
-    let clean_style_font_msg = if clean_style_font { "Clean style font enabled." } else { "" };
-    let verbose = if common.verbose { "Verbose mode enabled." } else { "" };
+	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+	let recursive_msg = if recursive { "Recursive mode enabled." } else { "" };
+	let clean_style_font_msg = if clean_style_font { "Clean style font enabled." } else { "" };
+	let verbose = if common.verbose { "Verbose mode enabled." } else { "" };
 
-    println!("{}", "-".repeat(100).yellow());
+	println!("{}", "-".repeat(100).yellow());
 
-    if !dry_run.is_empty() {
-        println!("{}", dry_run.yellow());
-    }
-    if !recursive_msg.is_empty() {
-        println!("{}", recursive_msg.yellow());
-    }
-    if !clean_style_font_msg.is_empty() {
-        println!("{}", clean_style_font_msg.yellow());
-    }
-    if !verbose.is_empty() {
-        println!("{}", verbose.yellow());
-    }
+	if !dry_run.is_empty() {
+		println!("{}", dry_run.yellow());
+	}
+	if !recursive_msg.is_empty() {
+		println!("{}", recursive_msg.yellow());
+	}
+	if !clean_style_font_msg.is_empty() {
+		println!("{}", clean_style_font_msg.yellow());
+	}
+	if !verbose.is_empty() {
+		println!("{}", verbose.yellow());
+	}
 
-    println!("{}", "-".repeat(100).yellow());
+	println!("{}", "-".repeat(100).yellow());
 
-    if let Some(paths) = paths {
-        for path_argument in paths {
-            let path = Path::new(&path_argument);
+	if let Some(paths) = paths {
+		for path_argument in paths {
+			let path = Path::new(&path_argument);
 
-            if path.exists() {
-                println_line_path_info(&path, common);
-                for file in read_dir_recursive(&path) {
-                    println_line_path_info(&file, common);
-                }
-            } else {
-                println!("File not found: {:?}", path_argument);
-            }
-        }
-    } else {
-        println!("No files provided.");
-    }
+			if path.exists() {
+				println_line_path_info(&path, common);
+				for file in read_dir_recursive(&path) {
+					println_line_path_info(&file, common);
+				}
+			} else {
+				println!("File not found: {:?}", path_argument);
+			}
+		}
+	} else {
+		println!("No files provided.");
+	}
 }
 
 #[cfg(test)]
@@ -160,5 +163,4 @@ mod commands_tests {
 			panic!("Expected Rename command");
 		}
 	}
-	
 }
