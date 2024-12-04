@@ -15,7 +15,7 @@ rustup target add x86_64-pc-windows-gnu
 rustup component add rust-src
 rustup component add llvm-tools-preview
 rustup component add rust-analysis
-
+winget install Python.Python.3.10
 
 ```
 
