@@ -82,6 +82,7 @@ pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
 			}
 		}
 	}
+
 	paths.sort_by(|a, b| {
 		let a_name = a.to_string_lossy().nfkc().collect::<String>();
 		let b_name = b.to_string_lossy().nfkc().collect::<String>();
