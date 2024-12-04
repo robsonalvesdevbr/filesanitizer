@@ -1,4 +1,4 @@
-use crate::{common::CommonOpts, utils::normalize_unicode};
+use crate::common::CommonOpts;
 use clap::Subcommand;
 use colored::Colorize;
 use regex::Regex;
@@ -6,6 +6,7 @@ use std::{
 	env, fs,
 	path::{Path, PathBuf},
 };
+use unicode_normalization::UnicodeNormalization;
 
 #[derive(Subcommand)]
 pub enum Commands {
@@ -76,12 +77,12 @@ pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
 				let path = entry.path();
 				paths.push(path.clone());
 				if path.is_dir() && recursive {
-					paths.extend(read_dir_recursive(&path, recursive));
+					paths.extend(read_dir_recursive(&path.clone(), recursive));
 				}
 			}
 		}
 	}
-
+	paths.sort();
 	paths
 }
 
@@ -105,21 +106,26 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 }
 
 fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
-	if !file.is_file() {
+	let original_path = PathBuf::from(file);
+	let original_string = original_path.to_string_lossy();
+	let normalized_string: String = original_string.nfkc().collect();
+	let binding = PathBuf::from(normalized_string);
+	let normalized_path: &Path = binding.as_path();
+
+	if normalized_path.is_dir() {
 		return Some(file.to_path_buf());
 	}
 
-	// Usar expressão regular para pegar o timestamp do arquivo
 	let re = Regex::new(r"(\d{8}_\d{6})").unwrap();
-	if re.is_match(file.file_name().unwrap().to_str().unwrap()) {
+	if re.is_match(normalized_path.file_name().unwrap().to_str().unwrap()) {
 		return None;
 	}
 
 	let metadata = fs::metadata(file).unwrap();
 	let created = metadata.created().unwrap();
 	let created: chrono::DateTime<chrono::Local> = created.into();
-	let new_name_with_timestamp = format!("{}{}", created.format("%Y%m%d_%H%M%S_"), file.file_name().unwrap().to_str().unwrap());
-	let new_path = file.with_file_name(new_name_with_timestamp);
+	let new_name_with_timestamp = format!("{}{}", created.format("%Y%m%d_%H%M%S_"), normalized_path.file_name().unwrap().to_str().unwrap());
+	let new_path = normalized_path.with_file_name(new_name_with_timestamp);
 	Some(new_path)
 }
 
@@ -179,20 +185,17 @@ impl RenameProcessor {
 	fn process_path(&self, path: &Path) {
 		println_line_path_info(path, path, self.common);
 		for file in read_dir_recursive(path, self.recursive) {
-			let arq = normalize_unicode(file.to_str().unwrap());
-			let arq = PathBuf::from(arq);
-
-			match generate_new_name_with_timestamp(&arq) {
+			match generate_new_name_with_timestamp(&file) {
 				Some(new_path) => {
 					if !self.common.dry_run {
 						if file.exists() {
-							fs::rename(file.clone(), new_path.clone()).unwrap();
+							fs::rename(&file, &new_path).ok();
 						} else {
 							println!("File not found: {:?}", file);
 							continue;
 						}
 					}
-					println_line_path_info(&file.clone(), &new_path.clone(), self.common);
+					println_line_path_info(&file, &new_path, self.common);
 				}
 				None => {
 					continue;

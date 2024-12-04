@@ -11,6 +11,12 @@ cargo add chrono
 cargo add regex
 cargo add unicode-normalization
 cargo add unicode-general-category
+rustup target add x86_64-pc-windows-gnu
+rustup component add rust-src
+rustup component add llvm-tools-preview
+rustup component add rust-analysis
+
+
 ```
 
 # Build/Run/Test

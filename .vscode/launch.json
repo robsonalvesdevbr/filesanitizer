@@ -7,25 +7,20 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug",
+      "name": "Debug Executable",
       "program": "${workspaceFolder}/target/debug/namesanitizer",
-      "args": ["rename", "--verbose", "--dry-run", "C:\\temp"],
+      "args": [
+        "rename",
+        "--recursive",
+        "--clean-style-font",
+        "--verbose",
+        "--dry-run",
+        "C:\\temp"
+      ],
       "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "preLaunchTask": "cargo build",
       "sourceLanguages": ["rust"]
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Debug executable 'namesanitizer'",
-      "cargo": {
-        "args": ["build", "--bin=namesanitizer", "--package=namesanitizer"],
-        "filter": {
-          "name": "namesanitizer",
-          "kind": "bin"
-        }
-      },
-      "args": [],
-      "cwd": "${workspaceFolder}"
     },
     {
       "type": "lldb",
