@@ -92,29 +92,6 @@ pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Result<Vec<PathBuf>, s
 	Ok(paths)
 }
 
-// pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
-// 	let mut paths = Vec::new();
-
-// 	if dir.is_dir() {
-// 		if let Ok(entries) = fs::read_dir(dir) {
-// 			for entry in entries.flatten() {
-// 				let path = entry.path();
-// 				paths.push(path);
-// 				if path.is_dir() && recursive {
-// 					paths.extend(read_dir_recursive(&path, recursive));
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	paths.sort_by(|a, b| {
-// 		let a_name = a.to_string_lossy().nfkc().collect::<String>();
-// 		let b_name = b.to_string_lossy().nfkc().collect::<String>();
-// 		a_name.cmp(&b_name)
-// 	});
-// 	paths
-// }
-
 fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 	if !common.verbose {
 		return;
