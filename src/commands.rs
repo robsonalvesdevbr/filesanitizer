@@ -68,28 +68,52 @@ pub fn handle_command(command: Option<Commands>) {
 	}
 }
 
-pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
+pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Result<Vec<PathBuf>, std::io::Error> {
 	let mut paths = Vec::new();
 
 	if dir.is_dir() {
-		if let Ok(entries) = fs::read_dir(dir) {
-			for entry in entries.flatten() {
-				let path = entry.path();
-				paths.push(path.clone());
-				if path.is_dir() && recursive {
-					paths.extend(read_dir_recursive(&path.clone(), recursive));
-				}
+		for entry in fs::read_dir(dir)? {
+			let entry = entry?;
+			let path = entry.path();
+			paths.push(path.clone());
+			if path.is_dir() && recursive {
+				paths.extend(read_dir_recursive(&path, recursive)?);
 			}
 		}
 	}
 
+	// Pré-processa os nomes para evitar normalizações repetitivas
 	paths.sort_by(|a, b| {
 		let a_name = a.to_string_lossy().nfkc().collect::<String>();
 		let b_name = b.to_string_lossy().nfkc().collect::<String>();
 		a_name.cmp(&b_name)
 	});
-	paths
+
+	Ok(paths)
 }
+
+// pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Vec<PathBuf> {
+// 	let mut paths = Vec::new();
+
+// 	if dir.is_dir() {
+// 		if let Ok(entries) = fs::read_dir(dir) {
+// 			for entry in entries.flatten() {
+// 				let path = entry.path();
+// 				paths.push(path);
+// 				if path.is_dir() && recursive {
+// 					paths.extend(read_dir_recursive(&path, recursive));
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	paths.sort_by(|a, b| {
+// 		let a_name = a.to_string_lossy().nfkc().collect::<String>();
+// 		let b_name = b.to_string_lossy().nfkc().collect::<String>();
+// 		a_name.cmp(&b_name)
+// 	});
+// 	paths
+// }
 
 fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 	if !common.verbose {
@@ -189,7 +213,16 @@ impl RenameProcessor {
 
 	fn process_path(&self, path: &Path) {
 		println_line_path_info(path, path, self.common);
-		for file in read_dir_recursive(path, self.recursive) {
+
+		let valor_recursivo = match read_dir_recursive(path, self.recursive) {
+			Ok(valor_recursivo) => valor_recursivo,
+			Err(e) => {
+				println!("Error: {}", e);
+				return;
+			}
+		};
+
+		for file in valor_recursivo {
 			match generate_new_name_with_timestamp(&file) {
 				Some(new_path) => {
 					if !self.common.dry_run {

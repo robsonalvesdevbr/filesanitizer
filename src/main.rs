@@ -4,9 +4,10 @@ use clap::Parser;
 use commands::handle_command;
 use common::Cli;
 
-fn main() {
+fn main() -> Result<(), std::io::Error> {
 	let cli = Cli::parse();
 	handle_command(cli.command);
+	Ok(())
 }
 
 #[cfg(test)]

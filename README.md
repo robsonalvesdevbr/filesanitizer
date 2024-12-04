@@ -12,9 +12,9 @@ cargo add regex
 cargo add unicode-normalization
 cargo add unicode-general-category
 
-winget install Rustlang.Rust.GNU
 winget install Python.Python.3.10
-rustup install stable-x86_64-pc-windows-gnu --force # Install the Rust GNU toolchain
+winget install LLVM.LLVM
+winget install Rustlang.Rustup
 rustup install stable-gnu                           # Install the Rust GNU toolchain
 rustup default stable-gnu
 rustup show
