@@ -7,8 +7,15 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug Executable",
+      "name": "Debug Executable Cargo",
       "program": "${workspaceFolder}/target/debug/namesanitizer",
+      "cargo": {
+        "args": ["build"],
+        "filter": {
+          "name": "namesanitizer",
+          "kind": "bin"
+        }
+      },
       "args": [
         "rename",
         "--recursive",
@@ -19,8 +26,34 @@
       ],
       "cwd": "${workspaceFolder}",
       "stopOnEntry": false,
+      "sourceLanguages": ["rust"],
+      "env": {
+        "RUST_BACKTRACE": "1",
+        "RUST_LOG": "debug"
+      }
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug Executable",
+      "program": "${workspaceFolder}/target/debug/namesanitizer",
+      "args": [
+        "rename",
+        "--recursive",
+        "--clean-style-font",
+        "--verbose",
+        "--dry-run",
+        "C:\\temp"
+      ],
+
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
       "preLaunchTask": "cargo build",
-      "sourceLanguages": ["rust"]
+      "sourceLanguages": ["rust"],
+      "env": {
+        "RUST_BACKTRACE": "1",
+        "RUST_LOG": "debug"
+      }
     },
     {
       "type": "lldb",
