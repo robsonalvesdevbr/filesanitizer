@@ -187,9 +187,19 @@ impl RenameProcessor {
 		let valor_recursivo = match read_dir_recursive(path, self.recursive) {
 			Ok(valor_recursivo) => {
 				valor_recursivo.clone().sort_by(|a, b| {
-					let a_name = a.to_string_lossy().nfkc().collect::<String>();
-					let b_name = b.to_string_lossy().nfkc().collect::<String>();
-					a_name.cmp(&b_name)
+					let a_is_dir = a.is_dir();
+					let b_is_dir = b.is_dir();
+
+					match (a_is_dir, b_is_dir) {
+						(true, false) => std::cmp::Ordering::Less,    // Diretórios antes dos arquivos
+						(false, true) => std::cmp::Ordering::Greater, // Arquivos depois dos diretórios
+						_ => {
+							// Ordena alfabeticamente considerando normalização Unicode
+							let a_normalized = a.to_string_lossy().nfkc().collect::<String>();
+							let b_normalized = b.to_string_lossy().nfkc().collect::<String>();
+							a_normalized.cmp(&b_normalized)
+						}
+					}
 				});
 				valor_recursivo
 			}
