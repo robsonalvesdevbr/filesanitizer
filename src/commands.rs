@@ -82,13 +82,6 @@ pub fn read_dir_recursive(dir: &Path, recursive: bool) -> Result<Vec<PathBuf>, s
 		}
 	}
 
-	//Pré-processa os nomes para evitar normalizações repetitivas
-	// paths.sort_by(|a, b| {
-	// 	let a_name = a.to_string_lossy().nfkc().collect::<String>();
-	// 	let b_name = b.to_string_lossy().nfkc().collect::<String>();
-	// 	a_name.cmp(&b_name)
-	// });
-
 	Ok(paths)
 }
 
