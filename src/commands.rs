@@ -122,7 +122,7 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 		return Some(file.to_path_buf());
 	}
 
-	let re = Regex::new(r"(\d{8}_\d{6})").unwrap();
+	let re = Regex::new(r"(^\d{8}_\d{6})").unwrap();
 	if re.is_match(normalized_path.file_name().unwrap().to_str().unwrap()) {
 		return None;
 	}
