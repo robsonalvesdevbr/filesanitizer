@@ -7,9 +7,9 @@ Enfatiza a ideia de "sanitizar" nomes de arquivos e pastas.
 ### Python
 
 ```bash
-winget uninstall Python.Launcher --all-versions   # Remove todas as versões do Python Launcher
+winget uninstall Python.Launcher --all-versions    # Remove todas as versões do Python Launcher
 winget uninstall Python.Python.3.10 --all-versions # Remove todas as versões do Python 3.10
-winget install Python.Python.3.10                # Instala o Python 3.10
+winget install Python.Python.3.10                  # Instala o Python 3.10
 ```
 
 ### LLVM
@@ -23,10 +23,10 @@ lldb --version                                   # Verifica a instalação do LL
 ### Rust
 
 ```bash
-winget install Rustlang.Rustup                   # Instala o gerenciador Rustup
-rustup install stable-gnu                        # Instala o Rust estável com suporte GNU
-rustup default stable-gnu                        # Define o Rust GNU como padrão
-rustup show                                      # Exibe as configurações do Rust
+winget install Rustlang.Rustup                  # Instala o gerenciador Rustup
+rustup install stable-gnu                       # Instala o Rust estável com suporte GNU
+rustup default stable-gnu                       # Define o Rust GNU como padrão
+rustup show                                     # Exibe as configurações do Rust
 rustup component add rust-src                   # Adiciona o código-fonte do Rust
 rustup component add llvm-tools-preview         # Adiciona ferramentas LLVM
 rustup component add rust-analysis              # Adiciona arquivos de análise
