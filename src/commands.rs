@@ -11,6 +11,7 @@ use unicode_normalization::UnicodeNormalization;
 #[derive(Subcommand)]
 pub enum Commands {
 	/// Rename files
+	#[command(about = "Renames files with a timestamp prefix. Supports recursive renaming.", display_order = 0)]
 	Rename {
 		/// Enable recursive mode
 		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
@@ -24,6 +25,7 @@ pub enum Commands {
 		common: CommonOpts,
 	},
 	/// Does testing things
+	#[command(about = "Performs test operations.", display_order = 1)]
 	Test {
 		/// Lists test values
 		#[arg(short, long, display_order = 0)]
