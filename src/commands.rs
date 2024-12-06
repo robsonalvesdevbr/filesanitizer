@@ -12,9 +12,9 @@ use unicode_normalization::UnicodeNormalization;
 pub enum Commands {
 	/// Renames files with a timestamp prefix. Supports recursive renaming.
 	#[command(
-		about = format!("{}\n{}\n{}\n{}\n{}", "Renames files with a timestamp prefix. Supports recursive renaming.".green(),
-				"- The rename command processes the specified files or directories, renaming each file by adding a timestamp prefix to its name.",
-				"- The timestamp is based on the files creation time and follows the format YYYYMMDD_HHMMSS_",
+		about = format!("{}\n{}\n{}\n{}\n{}", "Renames files with a timestamp prefix. Supports recursive renaming.".yellow(),
+				"- The `rename` command processes the specified files or directories, renaming each file by adding a timestamp prefix to its name.",
+				"- The timestamp is based on the files creation time and follows the format `YYYYMMDD_HHMMSS_`",
 				"- The command also handles Unicode normalization, ensuring that file paths are normalized using Unicode Normalization Form KC (NFKC).",
 				"- This helps in maintaining consistency in file names, especially when dealing with different Unicode representations."),
 		display_order = 0,
@@ -33,7 +33,7 @@ pub enum Commands {
 		common: CommonOpts,
 	},
 	/// Does testing things
-	#[command(about = "Performs test operations.", display_order = 1)]
+	#[command(about = format!("{}", "Performs test operations.".yellow()), display_order = 1)]
 	Test {
 		/// Lists test values
 		#[arg(short, long, display_order = 0)]
