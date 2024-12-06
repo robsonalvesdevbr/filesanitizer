@@ -1,4 +1,4 @@
-use crate::common::CommonOpts;
+use crate::common::{CommonOpts, ProjectType};
 use clap::{ColorChoice, Subcommand};
 use colored::Colorize;
 use regex::Regex;
@@ -25,7 +25,31 @@ pub enum Commands {
 		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
 		recursive: bool,
 
-		/// The files to rename
+		/// The directories to rename files
+		paths: Option<Vec<PathBuf>>,
+
+		/// Common options for all subcommands
+		#[command(flatten)]
+		common: CommonOpts,
+	},
+	/// Deletes files and directories. Supports recursive deletion.
+	#[command(
+		about = format!("{}\n{}\n{}\n{}", "Deletes files and directories. Supports recursive deletion.".yellow(),
+				"- The `delete` command processes the specified files or directories, deleting each file or directory.",
+				"- The command supports recursive deletion, allowing you to delete directories and their contents.",
+				"- This is useful for cleaning up project directories, example for .NET projects with `bin` and `obj` folders."),
+		display_order = 1,
+		color = ColorChoice::Always
+	)]
+	Delete {
+		/// Enable recursive mode
+		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
+		recursive: bool,
+
+		#[arg(value_enum)]
+		project: Option<ProjectType>,
+
+		/// The directories to delete files
 		paths: Option<Vec<PathBuf>>,
 
 		/// Common options for all subcommands
@@ -51,6 +75,9 @@ pub fn handle_command(command: Option<Commands>) {
 			let processor = RenameProcessor::new(recursive, common);
 			let paths = paths.or_else(|| env::current_dir().ok().map(|path| vec![path]));
 			processor.process(paths);
+		}
+		Some(Commands::Delete { recursive: _, project: _, paths: _, common }) => {
+			common.handle_common_opts();
 		}
 		Some(Commands::Test { list, common }) => {
 			if list {
