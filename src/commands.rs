@@ -10,8 +10,15 @@ use unicode_normalization::UnicodeNormalization;
 
 #[derive(Subcommand)]
 pub enum Commands {
-	/// Rename files
-	#[command(about = "Renames files with a timestamp prefix. Supports recursive renaming.", display_order = 0)]
+	/// Renames files with a timestamp prefix. Supports recursive renaming.
+	#[command(
+		about = "Renames files with a timestamp prefix. Supports recursive renaming.\n\
+				- The 'rename' command processes the specified files or directories, renaming each file by adding a timestamp prefix to its name.\n\
+				- The timestamp is based on the file's creation time and follows the format 'YYYYMMDD_HHMMSS_'\n\
+				- The command also handles Unicode normalization, ensuring that file paths are normalized using Unicode Normalization Form KC (NFKC).\n\
+				- This helps in maintaining consistency in file names, especially when dealing with different Unicode representations.",
+		display_order = 0
+	)]
 	Rename {
 		/// Enable recursive mode
 		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
