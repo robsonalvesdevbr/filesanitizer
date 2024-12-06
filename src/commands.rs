@@ -96,8 +96,8 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
-	let name = path.to_string_lossy(); //to_str().unwrap_or("Invalid UTF-8");
-	let new_name = new_path.to_string_lossy(); //to_str().unwrap_or("Invalid UTF-8");
+	let name = path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
+	let new_name = new_path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
 	let name_group = format!("{} -> {:<130}", name, new_name).chars().take(130).collect::<String>();
 
 	//println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
@@ -217,7 +217,6 @@ impl RenameProcessor {
 			if current_dir.as_deref() != parent_dir {
 				if let Some(dir) = parent_dir {
 					println!("{:<10}: {:<130} {:<10}", "Diretório", dir.to_string_lossy().bold().blue(), "");
-					//println!("Processing directory: {:?}", dir);
 					current_dir = Some(dir.to_path_buf());
 				}
 			}
