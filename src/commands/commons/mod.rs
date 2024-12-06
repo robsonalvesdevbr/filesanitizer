@@ -1,5 +1,12 @@
 use clap::{arg, Args, ValueEnum};
+use colored::Colorize;
 use core::fmt;
+use regex::Regex;
+use std::{
+	fs,
+	path::{Path, PathBuf},
+};
+use unicode_normalization::UnicodeNormalization;
 
 #[derive(Args, Clone, Copy)]
 pub struct CommonOpts {
@@ -56,4 +63,49 @@ impl CommonOpts {
 			println!("Verbose mode enabled.");
 		}
 	}
+}
+
+pub fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
+	if !common.verbose {
+		return;
+	}
+
+	if path.is_dir() {
+		return;
+	}
+
+	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
+
+	let name = path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
+	let new_name = new_path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
+	let name_group = format!("{} -> {:<130}", name.blue(), new_name.green()).chars().take(130).collect::<String>();
+
+	//println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
+	println!("{:<10}: {} {:<10}", "File", name_group, dry_run.yellow());
+}
+
+pub fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
+	let normalized_path = normalize_path(file);
+
+	if normalized_path.is_dir() {
+		return Some(file.to_path_buf());
+	}
+
+	let re = Regex::new(r"(^\d{8}_\d{6})").unwrap();
+	if re.is_match(normalized_path.file_name().unwrap().to_str().unwrap()) {
+		return None;
+	}
+
+	let metadata = fs::metadata(file).unwrap();
+	let created = metadata.created().unwrap();
+	let created: chrono::DateTime<chrono::Local> = created.into();
+	let new_name_with_timestamp = format!("{}{}", created.format("%Y%m%d_%H%M%S_"), normalized_path.file_name().unwrap().to_str().unwrap());
+	let new_path = normalized_path.with_file_name(new_name_with_timestamp);
+	Some(new_path)
+}
+
+pub fn normalize_path(file: &Path) -> PathBuf {
+	let original_path = PathBuf::from(file);
+	let normalized: String = original_path.to_string_lossy().nfkc().collect();
+	PathBuf::from(normalized)
 }
