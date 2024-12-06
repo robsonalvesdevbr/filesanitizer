@@ -90,18 +90,18 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 		return;
 	}
 
+	if path.is_dir() {
+		return;
+	}
+
 	let dry_run = if common.dry_run { "Dry-run mode enabled." } else { "" };
 
 	let name = path.to_string_lossy(); //to_str().unwrap_or("Invalid UTF-8");
 	let new_name = new_path.to_string_lossy(); //to_str().unwrap_or("Invalid UTF-8");
 	let name_group = format!("{} -> {:<130}", name, new_name).chars().take(130).collect::<String>();
 
-	if path.is_dir() {
-		println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
-	} else {
-		//println!("{:<10}: {:<130} {:<10}", "File", format!("{} -> {}", name.bold().blue(), new_name.bold().blue()).chars().take(130).collect::<String>(), dry_run.yellow());
-		println!("{:<10}: {} {:<10}", "File", name_group.blue(), dry_run.yellow());
-	}
+	//println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
+	println!("{:<10}: {} {:<10}", "File", name_group.blue(), dry_run.yellow());
 }
 
 fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
@@ -182,11 +182,11 @@ impl RenameProcessor {
 	}
 
 	fn process_path(&self, path: &Path) {
-		println_line_path_info(path, path, self.common);
+		//println_line_path_info(path, path, self.common);
 
 		let valor_recursivo = match read_dir_recursive(path, self.recursive) {
-			Ok(valor_recursivo) => {
-				valor_recursivo.clone().sort_by(|a, b| {
+			Ok(mut valor_recursivo) => {
+				valor_recursivo.sort_by(|a, b| {
 					let a_is_dir = a.is_dir();
 					let b_is_dir = b.is_dir();
 
@@ -209,7 +209,19 @@ impl RenameProcessor {
 			}
 		};
 
+		let mut current_dir: Option<PathBuf> = None;
+
 		for file in valor_recursivo {
+			let parent_dir = file.parent();
+
+			if current_dir.as_deref() != parent_dir {
+				if let Some(dir) = parent_dir {
+					println!("{:<10}: {:<130} {:<10}", "Diretório", dir.to_string_lossy().bold().blue(), "");
+					//println!("Processing directory: {:?}", dir);
+					current_dir = Some(dir.to_path_buf());
+				}
+			}
+
 			match generate_new_name_with_timestamp(&file) {
 				Some(new_path) => {
 					if !self.common.dry_run {
