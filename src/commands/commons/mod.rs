@@ -1,20 +1,5 @@
-use crate::commands;
-use clap::{arg, Args, ColorChoice, Parser, ValueEnum};
-use commands::subcommands::Commands;
+use clap::{arg, Args, ValueEnum};
 use core::fmt;
-
-#[derive(Parser)]
-#[command(
-    version = concat!("v", env!("CARGO_PKG_VERSION"), " (build ", env!("CARGO_PKG_NAME"), ")"),
-    about = env!("CARGO_PKG_DESCRIPTION"),
-    long_about = env!("CARGO_PKG_DESCRIPTION"),
-    color = ColorChoice::Always,
-    arg_required_else_help = true
-)]
-pub struct Cli {
-	#[command(subcommand)]
-	pub command: Option<Commands>,
-}
 
 #[derive(Args, Clone, Copy)]
 pub struct CommonOpts {

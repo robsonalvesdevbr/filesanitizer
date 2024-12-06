@@ -1,4 +1,4 @@
-use crate::{commands::subcommands::Commands, common::CommonOpts};
+use crate::{commands::commons::CommonOpts, commands::subcommands::Commands};
 use colored::Colorize;
 use regex::Regex;
 use std::{
@@ -208,11 +208,12 @@ impl RenameProcessor {
 
 #[cfg(test)]
 mod commands_tests {
-	use clap::Parser;
+
 	use std::path::PathBuf;
 
-	use crate::common::Cli;
-	use crate::file_operations::Commands;
+	use clap::Parser;
+
+	use crate::{cli::Cli, commands::subcommands::Commands};
 
 	#[test]
 	fn test_handle_subcommand_rename_args() {
