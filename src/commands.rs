@@ -84,10 +84,10 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 
 	let name = path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
 	let new_name = new_path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("Invalid UTF-8")).to_string_lossy();
-	let name_group = format!("{} -> {:<130}", name, new_name).chars().take(130).collect::<String>();
+	let name_group = format!("{} -> {:<130}", name.blue(), new_name.green()).chars().take(130).collect::<String>();
 
 	//println!("{:<10}: {:<130} {:<10}", "Diretório", name.bold().blue(), dry_run.yellow());
-	println!("{:<10}: {} {:<10}", "File", name_group.blue(), dry_run.yellow());
+	println!("{:<10}: {} {:<10}", "File", name_group, dry_run.yellow());
 }
 
 fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
