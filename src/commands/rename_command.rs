@@ -35,14 +35,21 @@ impl Command for RenameCommand {
 
 impl RenameCommand {
 	fn process_path(&self, path: &Path) {
-		if let Ok(files) = read_dir_recursive(path, self.recursive) {
-			for file in files {
-				if let Some(new_path) = generate_new_name_with_timestamp(&file) {
-					if !self.common.dry_run {
-						fs::rename(&file, &new_path).ok();
+		match read_dir_recursive(path, self.recursive) {
+			Ok(files) => {
+				for file in files {
+					if let Some(new_path) = generate_new_name_with_timestamp(&file) {
+						if !self.common.dry_run {
+							if let Err(e) = fs::rename(&file, &new_path) {
+								eprintln!("Erro ao renomear o arquivo {}: {}", file.display(), e);
+							}
+						}
+						println_line_path_info(&file, &new_path, self.common);
 					}
-					println_line_path_info(&file, &new_path, self.common);
 				}
+			}
+			Err(e) => {
+				eprintln!("Erro ao ler o diretório {}: {}", path.display(), e);
 			}
 		}
 	}
