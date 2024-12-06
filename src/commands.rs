@@ -95,11 +95,7 @@ fn println_line_path_info(path: &Path, new_path: &Path, common: CommonOpts) {
 }
 
 fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
-	let original_path = PathBuf::from(file);
-	let original_string = original_path.to_string_lossy();
-	let normalized_string: String = original_string.nfkc().collect();
-	let binding = PathBuf::from(normalized_string);
-	let normalized_path: &Path = binding.as_path();
+	let normalized_path = normalize_path(file);
 
 	if normalized_path.is_dir() {
 		return Some(file.to_path_buf());
@@ -116,6 +112,22 @@ fn generate_new_name_with_timestamp(file: &Path) -> Option<PathBuf> {
 	let new_name_with_timestamp = format!("{}{}", created.format("%Y%m%d_%H%M%S_"), normalized_path.file_name().unwrap().to_str().unwrap());
 	let new_path = normalized_path.with_file_name(new_name_with_timestamp);
 	Some(new_path)
+}
+
+pub fn validate_path_exists(path: &Path) -> bool {
+	if !path.exists() {
+		println!("File not found: {:?}", path);
+		false
+	} else {
+		true
+	}
+}
+
+// Helper to normalize file paths
+fn normalize_path(file: &Path) -> PathBuf {
+	let original_path = PathBuf::from(file);
+	let normalized: String = original_path.to_string_lossy().nfkc().collect();
+	PathBuf::from(normalized)
 }
 
 struct RenameProcessor {
@@ -135,11 +147,8 @@ impl RenameProcessor {
 		if let Some(paths) = paths {
 			for path_argument in paths {
 				let path = Path::new(&path_argument);
-
-				if path.exists() {
+				if validate_path_exists(path) {
 					self.process_path(path);
-				} else {
-					println!("File not found: {:?}", path_argument);
 				}
 			}
 		} else {
