@@ -1,5 +1,5 @@
 use crate::common::CommonOpts;
-use clap::Subcommand;
+use clap::{ColorChoice, Subcommand};
 use colored::Colorize;
 use regex::Regex;
 use std::{
@@ -12,12 +12,13 @@ use unicode_normalization::UnicodeNormalization;
 pub enum Commands {
 	/// Renames files with a timestamp prefix. Supports recursive renaming.
 	#[command(
-		about = "Renames files with a timestamp prefix. Supports recursive renaming.\n\
-				- The 'rename' command processes the specified files or directories, renaming each file by adding a timestamp prefix to its name.\n\
-				- The timestamp is based on the file's creation time and follows the format 'YYYYMMDD_HHMMSS_'\n\
-				- The command also handles Unicode normalization, ensuring that file paths are normalized using Unicode Normalization Form KC (NFKC).\n\
-				- This helps in maintaining consistency in file names, especially when dealing with different Unicode representations.",
-		display_order = 0
+		about = format!("{}\n{}\n{}\n{}\n{}", "Renames files with a timestamp prefix. Supports recursive renaming.".green(),
+				"- The rename command processes the specified files or directories, renaming each file by adding a timestamp prefix to its name.",
+				"- The timestamp is based on the files creation time and follows the format YYYYMMDD_HHMMSS_",
+				"- The command also handles Unicode normalization, ensuring that file paths are normalized using Unicode Normalization Form KC (NFKC).",
+				"- This helps in maintaining consistency in file names, especially when dealing with different Unicode representations."),
+		display_order = 0,
+		color = ColorChoice::Always
 	)]
 	Rename {
 		/// Enable recursive mode
