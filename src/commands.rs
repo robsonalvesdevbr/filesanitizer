@@ -16,10 +16,6 @@ pub enum Commands {
 		#[arg(short, long, default_value_t = false, display_order = 0, help = "Enable recursive mode [default: false]")]
 		recursive: bool,
 
-		/// Clean style font
-		#[arg(short, long, default_value_t = true, display_order = 2, help = "Remove style font from the file name [default: true]")]
-		clean_style_font: bool,
-
 		/// The files to rename
 		paths: Option<Vec<PathBuf>>,
 
@@ -41,8 +37,8 @@ pub enum Commands {
 
 pub fn handle_command(command: Option<Commands>) {
 	match command {
-		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
-			let processor = RenameProcessor::new(recursive, clean_style_font, common);
+		Some(Commands::Rename { recursive, paths, common }) => {
+			let processor = RenameProcessor::new(recursive, common);
 			let paths = paths.or_else(|| env::current_dir().ok().map(|path| vec![path]));
 			processor.process(paths);
 		}
@@ -132,13 +128,12 @@ fn normalize_path(file: &Path) -> PathBuf {
 
 struct RenameProcessor {
 	recursive: bool,
-	clean_style_font: bool,
 	common: CommonOpts,
 }
 
 impl RenameProcessor {
-	fn new(recursive: bool, clean_style_font: bool, common: CommonOpts) -> Self {
-		Self { recursive, clean_style_font, common }
+	fn new(recursive: bool, common: CommonOpts) -> Self {
+		Self { recursive, common }
 	}
 
 	fn process(&self, paths: Option<Vec<PathBuf>>) {
@@ -159,7 +154,6 @@ impl RenameProcessor {
 	fn print_command_info(&self) {
 		let dry_run = if self.common.dry_run { "Dry-run mode enabled." } else { "" };
 		let recursive_msg = if self.recursive { "Recursive mode enabled." } else { "" };
-		let clean_style_font_msg = if self.clean_style_font { "Clean style font enabled." } else { "" };
 		let verbose = if self.common.verbose { "Verbose mode enabled." } else { "" };
 
 		println!("{}", "-".repeat(100).yellow());
@@ -169,9 +163,6 @@ impl RenameProcessor {
 		}
 		if !recursive_msg.is_empty() {
 			println!("{}", recursive_msg.yellow());
-		}
-		if !clean_style_font_msg.is_empty() {
-			println!("{}", clean_style_font_msg.yellow());
 		}
 		if !verbose.is_empty() {
 			println!("{}", verbose.yellow());
@@ -250,11 +241,10 @@ mod commands_tests {
 
 	#[test]
 	fn test_handle_subcommand_rename_args() {
-		let args = ["test", "rename", "--recursive", "--clean-style-font", "--verbose", "--dry-run", "list.txt"];
+		let args = ["test", "rename", "--recursive", "--verbose", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
-		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
+		if let Some(Commands::Rename { recursive, paths, common }) = cli.command {
 			assert!(recursive, "Expected recursive to be true: {}", recursive);
-			assert!(clean_style_font, "Expected clean_style_font to be true: {}", clean_style_font);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
 			assert!(common.verbose, "Expected verbose to be true: {}", common.verbose);
 			assert!(common.dry_run, "Expected dry_run to be true: {}", common.dry_run);
@@ -265,11 +255,10 @@ mod commands_tests {
 
 	#[test]
 	fn test_handle_subcommand_rename_args_with_verbose_false() {
-		let args = ["test", "rename", "--recursive", "--clean-style-font", "--dry-run", "list.txt"];
+		let args = ["test", "rename", "--recursive", "--dry-run", "list.txt"];
 		let cli = Cli::parse_from(args);
-		if let Some(Commands::Rename { recursive, clean_style_font, paths, common }) = cli.command {
+		if let Some(Commands::Rename { recursive, paths, common }) = cli.command {
 			assert!(recursive, "Expected recursive to be true: {}", recursive);
-			assert!(clean_style_font, "Expected clean_style_font to be true: {}", clean_style_font);
 			assert_eq!(paths, Some(vec![PathBuf::from("list.txt")]), "Expected paths to be Some([PathBuf::from(\"list.txt\")]): {:?}", paths);
 			assert!(!common.verbose, "Expected verbose to be false: {}", common.verbose);
 			assert!(common.dry_run, "Expected dry_run to be true: {}", common.dry_run);
