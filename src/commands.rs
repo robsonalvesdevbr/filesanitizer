@@ -43,18 +43,8 @@ pub fn handle_command(command: Option<Commands>) {
 	match command {
 		Some(Commands::Rename { recursive, clean_style_font, paths, common }) => {
 			let processor = RenameProcessor::new(recursive, clean_style_font, common);
-			let direct = match &paths {
-				Some(paths) => Some(paths.clone()),
-				None => match env::current_dir() {
-					Ok(path) => Some(vec![path]),
-					Err(e) => {
-						println!("Error: {}", e);
-						None
-					}
-				},
-			};
-
-			processor.process(direct);
+			let paths = paths.or_else(|| env::current_dir().ok().map(|path| vec![path]));
+			processor.process(paths);
 		}
 		Some(Commands::Test { list, common }) => {
 			if list {
