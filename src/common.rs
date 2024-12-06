@@ -1,7 +1,7 @@
-use core::fmt;
-
-use crate::commands::Commands;
+use crate::commands;
 use clap::{arg, Args, ColorChoice, Parser, ValueEnum};
+use commands::subcommands::Commands;
+use core::fmt;
 
 #[derive(Parser)]
 #[command(

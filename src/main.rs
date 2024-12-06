@@ -1,8 +1,9 @@
-mod commands;
 mod common;
+mod file_operations;
 use clap::Parser;
-use commands::handle_command;
+mod commands;
 use common::Cli;
+use file_operations::handle_command;
 
 fn main() -> Result<(), std::io::Error> {
 	let cli = Cli::parse();
@@ -14,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
 mod main_tests {
 	use std::path::PathBuf;
 
-	use commands::Commands;
+	use commands::subcommands::Commands;
 	use common::CommonOpts;
 
 	use super::*;
